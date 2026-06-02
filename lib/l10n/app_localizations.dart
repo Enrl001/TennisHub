@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
-  /// **'Tennis Hub'**
+  /// **'MyClub'**
   String get appName;
 
   /// No description provided for @login.
@@ -308,6 +308,12 @@ abstract class AppLocalizations {
   /// **'Book Now'**
   String get bookNow;
 
+  /// No description provided for @book.
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get book;
+
   /// No description provided for @slotsLeft.
   ///
   /// In en, this message translates to:
@@ -445,6 +451,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Proceed'**
   String get proceed;
+
+  /// No description provided for @requestBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Booking'**
+  String get requestBooking;
 
   /// No description provided for @payment.
   ///

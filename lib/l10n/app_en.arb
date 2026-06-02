@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appName": "Tennis Hub",
+  "appName": "MyClub",
   "@appName": {},
 
   "login": "Login",
@@ -74,6 +74,8 @@
   "@filterVirtual": {},
   "bookNow": "Book Now",
   "@bookNow": {},
+  "book": "Book",
+  "@book": {},
   "slotsLeft": "{count} spots left",
   "@slotsLeft": {
     "placeholders": {
@@ -134,6 +136,8 @@
   "@slotFull": {},
   "proceed": "Proceed",
   "@proceed": {},
+  "requestBooking": "Request Booking",
+  "@requestBooking": {},
 
   "payment": "Payment",
   "@payment": {},

@@ -1,7 +1,16 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../shared/providers/supabase_providers.dart';
 
 part 'payment_provider.g.dart';
+
+/// Whether Smartpay has marked this booking as paid.
+final bookingPaidProvider = FutureProvider.family<bool, String>((
+  ref,
+  bookingId,
+) async {
+  return ref.read(paymentProvider.notifier).isBookingPaid(bookingId);
+});
 
 /// Holds the Smartpay invoice URL returned after invoice creation.
 /// `null` = not yet created / loading cleared.
@@ -42,9 +51,26 @@ class PaymentNotifier extends _$PaymentNotifier {
     }
   }
 
-  /// Polls Supabase for the booking's current status.
-  /// The webhook updates it to 'confirmed' once Smartpay notifies payment.
-  Future<String?> checkBookingStatus(String bookingId) async {
+  /// True when Smartpay webhook marked the payment as paid.
+  Future<bool> isBookingPaid(String bookingId) async {
+    final client = ref.read(supabaseClientProvider);
+    final rows = await client
+        .from('payments')
+        .select('status')
+        .eq('booking_id', bookingId)
+        .order('created_at', ascending: false)
+        .limit(1);
+    if (rows.isEmpty) return false;
+    return rows.first['status'] == 'paid';
+  }
+
+  /// Polls payment status (not booking status — group lessons can be
+  /// confirmed before payment completes).
+  Future<bool> checkPaymentComplete(String bookingId) async {
+    return isBookingPaid(bookingId);
+  }
+
+  Future<String?> bookingStatus(String bookingId) async {
     final client = ref.read(supabaseClientProvider);
     final data = await client
         .from('bookings')

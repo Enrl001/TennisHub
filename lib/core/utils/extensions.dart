@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 
 extension DateTimeExtensions on DateTime {
   String toDisplayDate() => DateFormat('EEE, MMM d, yyyy').format(this);
-  String toDisplayTime() => DateFormat('h:mm a').format(this);
   String toDisplayDateTime() => DateFormat('MMM d, yyyy • h:mm a').format(this);
   bool isSameDay(DateTime other) =>
       year == other.year && month == other.month && day == other.day;

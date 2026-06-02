@@ -5,9 +5,10 @@ class AppColors {
   AppColors._();
 
   static const Color primary = Color(0xFF2D6A4F);
-  static const Color accent = Color(0xFFD4E157);
-  static const Color background = Color(0xFFF4F6F4);
-  static const Color cardBorder = Color(0xFFEEF2EE);
+  static const Color tennisGreen = Color(0xFFCCE226);
+  static const Color accent = Color(0xFFCCE226);
+  static const Color background = Color(0xFFFFFFFF);
+  static const Color cardBorder = Color(0xFFF0F0F0);
   static const Color white = Colors.white;
 
   // Service type colors
@@ -53,6 +54,18 @@ class AppColors {
   }
 }
 
+/// Shared layout tokens used by Coach Hub and customer booking flows.
+class HubStyle {
+  HubStyle._();
+
+  static const Color pageBg = Color(0xFFF5F6F8);
+  static const Color hubOlive = Color(0xFF526300);
+  static const Color cardBorder = Color(0xFFE4E6DC);
+  static const Color darkPanel = Color(0xFF252B2B);
+  static const Color textPrimary = Color(0xFF181A20);
+  static const Color textMuted = Color(0xFF6B7280);
+}
+
 class AppTheme {
   AppTheme._();
 
@@ -62,13 +75,13 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         primary: AppColors.primary,
-        secondary: AppColors.accent,
-        surface: AppColors.background,
+        secondary: AppColors.tennisGreen,
+        surface: Colors.white,
       ),
-      scaffoldBackgroundColor: AppColors.background,
+      scaffoldBackgroundColor: Colors.white,
       textTheme: GoogleFonts.poppinsTextTheme(base.textTheme),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.white,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         titleTextStyle: GoogleFonts.poppins(
@@ -79,7 +92,7 @@ class AppTheme {
         iconTheme: const IconThemeData(color: Color(0xFF1A1A1A)),
       ),
       cardTheme: CardThemeData(
-        color: AppColors.white,
+        color: Colors.white,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -88,7 +101,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.white,
+        fillColor: Colors.white,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
@@ -101,7 +114,8 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide:
+              const BorderSide(color: AppColors.tennisGreen, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -110,18 +124,23 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.white,
+          backgroundColor: AppColors.tennisGreen,
+          foregroundColor: const Color(0xFF1A3A10),
           minimumSize: const Size(double.infinity, 52),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
           textStyle: GoogleFonts.poppins(
             fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
           elevation: 0,
         ),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: AppColors.tennisGreen,
+        foregroundColor: Color(0xFF1A3A10),
+        elevation: 2,
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
@@ -138,15 +157,15 @@ class AppTheme {
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: AppColors.white,
+        backgroundColor: Colors.white,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: Color(0xFF9E9E9E),
         type: BottomNavigationBarType.fixed,
         elevation: 8,
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: AppColors.background,
-        selectedColor: AppColors.primary.withOpacity(0.15),
+        backgroundColor: Colors.white,
+        selectedColor: AppColors.tennisGreen.withOpacity(0.25),
         labelStyle: GoogleFonts.poppins(fontSize: 13),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         side: const BorderSide(color: AppColors.cardBorder),

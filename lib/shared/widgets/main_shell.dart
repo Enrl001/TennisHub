@@ -25,37 +25,49 @@ class CustomerShell extends ConsumerWidget {
         currentIndex: currentIndex,
         onTap: (i) {
           switch (i) {
-            case 0: context.go('/home'); break;
-            case 1: context.go('/calendar'); break;
-            case 2: context.go('/notifications'); break;
-            case 3: context.go('/settings'); break;
+            case 0:
+              context.go('/home');
+              break;
+            case 1:
+              context.go('/calendar');
+              break;
+            case 2:
+              context.go('/notifications');
+              break;
+            case 3:
+              context.go('/settings');
+              break;
           }
         },
         items: [
           BottomNavigationBarItem(
-              icon: const Icon(Icons.home_outlined),
-              activeIcon: const Icon(Icons.home),
-              label: l10n.home),
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: l10n.home,
+          ),
           BottomNavigationBarItem(
-              icon: const Icon(Icons.calendar_month_outlined),
-              activeIcon: const Icon(Icons.calendar_month),
-              label: l10n.calendar),
+            icon: const Icon(Icons.calendar_month_outlined),
+            activeIcon: const Icon(Icons.calendar_month),
+            label: l10n.calendar,
+          ),
           BottomNavigationBarItem(
-              icon: Badge(
-                isLabelVisible: unread > 0,
-                label: Text('$unread'),
-                child: const Icon(Icons.notifications_outlined),
-              ),
-              activeIcon: Badge(
-                isLabelVisible: unread > 0,
-                label: Text('$unread'),
-                child: const Icon(Icons.notifications),
-              ),
-              label: l10n.notifications),
+            icon: Badge(
+              isLabelVisible: unread > 0,
+              label: Text('$unread'),
+              child: const Icon(Icons.notifications_outlined),
+            ),
+            activeIcon: Badge(
+              isLabelVisible: unread > 0,
+              label: Text('$unread'),
+              child: const Icon(Icons.notifications),
+            ),
+            label: l10n.notifications,
+          ),
           BottomNavigationBarItem(
-              icon: const Icon(Icons.person_outline),
-              activeIcon: const Icon(Icons.person),
-              label: l10n.profile),
+            icon: const Icon(Icons.person_outline),
+            activeIcon: const Icon(Icons.person),
+            label: l10n.profile,
+          ),
         ],
       ),
     );
@@ -69,13 +81,15 @@ class CoachShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final isMn = Localizations.localeOf(context).languageCode == 'mn';
     final unread = ref.watch(unreadCountProvider);
     final location = GoRouterState.of(context).matchedLocation;
 
     int currentIndex = 0;
-    if (location.startsWith('/coach-calendar')) currentIndex = 1;
-    if (location.startsWith('/coach-notifications')) currentIndex = 2;
-    if (location.startsWith('/coach-settings')) currentIndex = 3;
+    if (location.startsWith('/coach-dashboard')) currentIndex = 1;
+    if (location.startsWith('/coach-calendar')) currentIndex = 2;
+    if (location.startsWith('/coach-notifications')) currentIndex = 3;
+    if (location.startsWith('/coach-settings')) currentIndex = 4;
 
     return Scaffold(
       body: child,
@@ -83,37 +97,57 @@ class CoachShell extends ConsumerWidget {
         currentIndex: currentIndex,
         onTap: (i) {
           switch (i) {
-            case 0: context.go('/coach-dashboard'); break;
-            case 1: context.go('/coach-calendar'); break;
-            case 2: context.go('/coach-notifications'); break;
-            case 3: context.go('/coach-settings'); break;
+            case 0:
+              context.go('/coach-home');
+              break;
+            case 1:
+              context.go('/coach-dashboard');
+              break;
+            case 2:
+              context.go('/coach-calendar');
+              break;
+            case 3:
+              context.go('/coach-notifications');
+              break;
+            case 4:
+              context.go('/coach-settings');
+              break;
           }
         },
         items: [
           BottomNavigationBarItem(
-              icon: const Icon(Icons.dashboard_outlined),
-              activeIcon: const Icon(Icons.dashboard),
-              label: l10n.dashboard),
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: l10n.home,
+          ),
           BottomNavigationBarItem(
-              icon: const Icon(Icons.calendar_month_outlined),
-              activeIcon: const Icon(Icons.calendar_month),
-              label: l10n.calendar),
+            icon: const Icon(Icons.dashboard_outlined),
+            activeIcon: const Icon(Icons.dashboard),
+            label: isMn ? 'Самбар' : 'Dash',
+          ),
           BottomNavigationBarItem(
-              icon: Badge(
-                isLabelVisible: unread > 0,
-                label: Text('$unread'),
-                child: const Icon(Icons.notifications_outlined),
-              ),
-              activeIcon: Badge(
-                isLabelVisible: unread > 0,
-                label: Text('$unread'),
-                child: const Icon(Icons.notifications),
-              ),
-              label: l10n.notifications),
+            icon: const Icon(Icons.calendar_month_outlined),
+            activeIcon: const Icon(Icons.calendar_month),
+            label: l10n.calendar,
+          ),
           BottomNavigationBarItem(
-              icon: const Icon(Icons.person_outline),
-              activeIcon: const Icon(Icons.person),
-              label: l10n.profile),
+            icon: Badge(
+              isLabelVisible: unread > 0,
+              label: Text('$unread'),
+              child: const Icon(Icons.notifications_outlined),
+            ),
+            activeIcon: Badge(
+              isLabelVisible: unread > 0,
+              label: Text('$unread'),
+              child: const Icon(Icons.notifications),
+            ),
+            label: isMn ? 'Мэдээ' : 'Alerts',
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person_outline),
+            activeIcon: const Icon(Icons.person),
+            label: l10n.profile,
+          ),
         ],
       ),
     );

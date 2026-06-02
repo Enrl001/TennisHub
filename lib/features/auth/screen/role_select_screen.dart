@@ -50,7 +50,7 @@ class _RoleSelectScreenState extends ConsumerState<RoleSelectScreen> {
               Text(l10n.roleSelectTitle,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700)),
               const SizedBox(height: 8),
-              Text('Choose how you will use Tennis Hub',
+              Text('Choose how you will use MyClub',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey)),
               const SizedBox(height: 40),
               _RoleCard(

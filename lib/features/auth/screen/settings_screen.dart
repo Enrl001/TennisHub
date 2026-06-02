@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../coach/providers/coach_provider.dart';
 import '../providers/auth_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -14,171 +15,456 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final profile = ref.watch(currentProfileProvider);
     final locale = ref.watch(localeProvider);
+    final isMn = locale == 'mn';
+    final isCoach = profile?.role == 'coach';
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settings)),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            // Avatar + name
-            Center(
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 44,
-                    backgroundColor: AppColors.primary.withOpacity(0.1),
-                    backgroundImage: profile?.avatarUrl != null
-                        ? CachedNetworkImageProvider(profile!.avatarUrl!)
-                        : null,
-                    child: profile?.avatarUrl == null
-                        ? const Icon(Icons.person, size: 44, color: AppColors.primary)
-                        : null,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 180,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, Color(0xFF1B4332)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    profile?.fullName ?? profile?.id.substring(0, 8) ?? '',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                child: SafeArea(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 20),
+                      CircleAvatar(
+                        radius: 42,
+                        backgroundColor: Colors.white24,
+                        backgroundImage: profile?.avatarUrl != null
+                            ? CachedNetworkImageProvider(profile!.avatarUrl!)
+                            : null,
+                        child: profile?.avatarUrl == null
+                            ? Text(
+                                (profile?.fullName ?? 'U')[0].toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 34,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              )
+                            : null,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        profile?.fullName ?? '',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.tennisGreen,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          isCoach
+                              ? (isMn ? 'Тренер' : 'Coach')
+                              : (isMn ? 'Тоглогч' : 'Player'),
+                          style: const TextStyle(
+                            color: Color(0xFF1A3A10),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    profile?.role == 'coach' ? 'Tennis Coach' : 'Player',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                ],
+                ),
               ),
             ),
-            const SizedBox(height: 24),
-
-            // Language
-            _SectionHeader(title: l10n.language),
-            _SettingsTile(
-              icon: Icons.language,
-              title: l10n.language,
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _LocaleChip(
-                    label: 'EN',
-                    selected: locale == 'en',
-                    onTap: () => ref.read(localeProvider.notifier).setLocale('en'),
-                  ),
-                  const SizedBox(width: 8),
-                  _LocaleChip(
-                    label: 'MN',
-                    selected: locale == 'mn',
-                    onTap: () => ref.read(localeProvider.notifier).setLocale('mn'),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1, indent: 16),
-
-            // Profile
-            _SectionHeader(title: l10n.profile),
-            _SettingsTile(
-              icon: Icons.edit_outlined,
-              title: l10n.editProfile,
-              onTap: () => context.push(
-                  profile?.role == 'coach' ? '/edit-coach-profile' : '/settings'),
-            ),
-            if (profile?.role == 'coach') ...[
-              const Divider(height: 1, indent: 16),
-              _SettingsTile(
-                icon: Icons.sports_tennis,
-                title: 'Coach Profile',
-                onTap: () => context.push('/coach-profile'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.edit_outlined, color: Colors.white),
+                tooltip: l10n.editProfile,
+                onPressed: () => context.push('/edit-coach-profile'),
               ),
             ],
-            const Divider(height: 1, indent: 16),
-
-            // Logout
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: OutlinedButton.icon(
-                onPressed: () async {
-                  await ref.read(authProvider.notifier).signOut();
-                  if (context.mounted) context.go('/onboarding');
-                },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.statusCancelled,
-                  side: const BorderSide(color: AppColors.statusCancelled),
+          ),
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (isCoach) _CoachSection(isMn: isMn),
+                const Divider(height: 1, indent: 16),
+                // Language
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.language,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        l10n.language,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const Spacer(),
+                      _LocaleChip(
+                        label: 'EN',
+                        selected: !isMn,
+                        onTap: () =>
+                            ref.read(localeProvider.notifier).setLocale('en'),
+                      ),
+                      const SizedBox(width: 8),
+                      _LocaleChip(
+                        label: 'MN',
+                        selected: isMn,
+                        onTap: () =>
+                            ref.read(localeProvider.notifier).setLocale('mn'),
+                      ),
+                    ],
+                  ),
                 ),
-                icon: const Icon(Icons.logout),
-                label: Text(l10n.logout),
-              ),
+                const Divider(height: 1, indent: 16),
+                if (!isCoach) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: _BecomeCoachCard(isMn: isMn),
+                  ),
+                ],
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () async {
+                        await ref.read(authProvider.notifier).signOut();
+                        if (context.mounted) context.go('/onboarding');
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.statusCancelled,
+                        side: const BorderSide(
+                          color: AppColors.statusCancelled,
+                        ),
+                      ),
+                      icon: const Icon(Icons.logout),
+                      label: Text(l10n.logout),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ],
             ),
-            const SizedBox(height: 32),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title});
-  final String title;
+class _BecomeCoachCard extends ConsumerWidget {
+  const _BecomeCoachCard({required this.isMn});
+  final bool isMn;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            title.toUpperCase(),
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Colors.grey,
-                  letterSpacing: 1.2,
-                  fontWeight: FontWeight.w600,
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(color: AppColors.tennisGreen.withOpacity(0.6)),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: () => _confirm(context, ref),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.tennisGreen.withOpacity(0.18),
+                  borderRadius: BorderRadius.circular(10),
                 ),
+                child: const Icon(
+                  Icons.sports_tennis,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isMn ? 'Тренер болох' : 'Become a Coach',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      isMn
+                          ? 'Теннисний хичээл зааж орлого олох'
+                          : 'Start offering tennis lessons and earn',
+                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+            ],
           ),
         ),
-      );
+      ),
+    );
+  }
+
+  Future<void> _confirm(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          ref.read(localeProvider) == 'mn'
+              ? 'Тренер болох уу?'
+              : 'Become a Coach?',
+        ),
+        content: Text(
+          ref.read(localeProvider) == 'mn'
+              ? 'Таны бүртгэл тренерийн бүртгэл болж шилжинэ. Хичээл нэмж, хуваарь гаргах боломжтой.'
+              : 'Your account will be upgraded to a coach account. You can then add services and manage your schedule.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(isMn ? 'Болих' : 'Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(
+              minimumSize: Size.zero,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            ),
+            child: Text(isMn ? 'Шилжих' : 'Upgrade'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      await ref.read(authProvider.notifier).updateProfile({'role': 'coach'});
+    }
+  }
 }
 
-class _SettingsTile extends StatelessWidget {
-  const _SettingsTile({required this.icon, required this.title, this.trailing, this.onTap});
-  final IconData icon;
-  final String title;
-  final Widget? trailing;
-  final VoidCallback? onTap;
+class _CoachSection extends ConsumerWidget {
+  const _CoachSection({required this.isMn});
+  final bool isMn;
 
   @override
-  Widget build(BuildContext context) => ListTile(
-        leading: Icon(icon, color: AppColors.primary),
-        title: Text(title),
-        trailing: trailing ?? (onTap != null ? const Icon(Icons.chevron_right) : null),
-        onTap: onTap,
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final coachAsync = ref.watch(myCoachProfileProvider);
+
+    return coachAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(24),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => const SizedBox(),
+      data: (coach) {
+        if (coach == null) {
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: OutlinedButton.icon(
+              onPressed: () => context.push('/edit-coach-profile'),
+              icon: const Icon(Icons.add),
+              label: Text(
+                isMn ? 'Тренерийн мэдээлэл нэмэх' : 'Complete coach profile',
+              ),
+            ),
+          );
+        }
+
+        final bio = isMn ? (coach.bioMn ?? coach.bio) : coach.bio;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Stats row
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Wrap(
+                spacing: 20,
+                runSpacing: 8,
+                children: [
+                  _StatItem(
+                    icon: Icons.star_rounded,
+                    color: Colors.amber,
+                    label: (coach.avgRating ?? 0.0).toStringAsFixed(1),
+                    sub: isMn ? 'Үнэлгээ' : 'Rating',
+                  ),
+                  _StatItem(
+                    icon: Icons.rate_review_outlined,
+                    color: AppColors.primary,
+                    label: '${coach.totalReviews ?? 0}',
+                    sub: isMn ? 'Сэтгэгдэл' : 'Reviews',
+                  ),
+                  if (coach.yearsExperience != null)
+                    _StatItem(
+                      icon: Icons.workspace_premium_outlined,
+                      color: AppColors.virtualSession,
+                      label: '${coach.yearsExperience}',
+                      sub: isMn ? 'Жил туршлага' : 'Yrs exp',
+                    ),
+                ],
+              ),
+            ),
+            if (coach.location != null) ...[
+              const Divider(height: 1, indent: 16),
+              ListTile(
+                leading: const Icon(
+                  Icons.location_on_outlined,
+                  color: AppColors.primary,
+                ),
+                title: Text(coach.location!),
+                dense: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+            ],
+            if (bio != null && bio.isNotEmpty) ...[
+              const Divider(height: 1, indent: 16),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                child: Text(
+                  bio,
+                  style: const TextStyle(height: 1.6, color: Colors.black87),
+                ),
+              ),
+            ],
+            if ((coach.certifications ?? []).isNotEmpty) ...[
+              const Divider(height: 1, indent: 16),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+                child: Text(
+                  l10n.certifications,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                child: Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: coach.certifications!
+                      .map(
+                        (c) => Chip(
+                          label: Text(c, style: const TextStyle(fontSize: 12)),
+                          backgroundColor: AppColors.tennisGreen.withOpacity(
+                            0.20,
+                          ),
+                          side: const BorderSide(
+                            color: AppColors.tennisGreen,
+                            width: 1,
+                          ),
+                          labelStyle: const TextStyle(color: Color(0xFF1A3A10)),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _StatItem extends StatelessWidget {
+  const _StatItem({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.sub,
+  });
+  final IconData icon;
+  final Color color;
+  final String label;
+  final String sub;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: color,
+              fontSize: 15,
+            ),
+          ),
+        ],
+      ),
+      Text(sub, style: const TextStyle(color: Colors.grey, fontSize: 11)),
+    ],
+  );
 }
 
 class _LocaleChip extends StatelessWidget {
-  const _LocaleChip({required this.label, required this.selected, required this.onTap});
+  const _LocaleChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
   final String label;
   final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: selected ? AppColors.primary : AppColors.background,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-                color: selected ? AppColors.primary : AppColors.cardBorder),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: selected ? Colors.white : Colors.grey,
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-            ),
-          ),
+    onTap: onTap,
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        color: selected ? AppColors.tennisGreen : Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: selected ? AppColors.tennisGreen : Colors.grey.shade300,
         ),
-      );
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          color: selected ? const Color(0xFF1A3A10) : Colors.grey,
+          fontSize: 13,
+        ),
+      ),
+    ),
+  );
 }

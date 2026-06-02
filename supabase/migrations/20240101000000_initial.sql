@@ -2,7 +2,7 @@
 -- Run: supabase db push
 
 -- ─── EXTENSIONS ─────────────────────────────────────────────────────────────
-create extension if not exists "uuid-ossp";
+-- gen_random_uuid() comes from pgcrypto (Supabase ships this; uuid-ossp is optional).
 create extension if not exists "pgcrypto";
 
 -- ─── PROFILES ────────────────────────────────────────────────────────────────
@@ -29,7 +29,7 @@ create policy "Authenticated users can view all profiles"
 
 -- ─── COACHES ─────────────────────────────────────────────────────────────────
 create table if not exists public.coaches (
-  id                uuid primary key default uuid_generate_v4(),
+  id                uuid primary key default gen_random_uuid(),
   profile_id        uuid not null references public.profiles(id) on delete cascade,
   bio               text,
   bio_mn            text,
@@ -51,7 +51,7 @@ create policy "Coaches can manage their own record"
 
 -- ─── SERVICES ────────────────────────────────────────────────────────────────
 create table if not exists public.services (
-  id               uuid primary key default uuid_generate_v4(),
+  id               uuid primary key default gen_random_uuid(),
   coach_id         uuid not null references public.coaches(id) on delete cascade,
   type             text not null check (type in ('private_lesson','group_lesson','community_event','virtual_session')),
   title            text not null,
@@ -81,7 +81,7 @@ create policy "Coaches manage their own services"
 
 -- ─── TIME SLOTS ──────────────────────────────────────────────────────────────
 create table if not exists public.time_slots (
-  id            uuid primary key default uuid_generate_v4(),
+  id            uuid primary key default gen_random_uuid(),
   service_id    uuid references public.services(id) on delete set null,
   coach_id      uuid not null references public.coaches(id) on delete cascade,
   starts_at     timestamptz not null,
@@ -104,7 +104,7 @@ create policy "Coaches manage their own time slots"
 
 -- ─── BOOKINGS ────────────────────────────────────────────────────────────────
 create table if not exists public.bookings (
-  id             uuid primary key default uuid_generate_v4(),
+  id             uuid primary key default gen_random_uuid(),
   slot_id        uuid references public.time_slots(id) on delete set null,
   service_id     uuid references public.services(id) on delete set null,
   coach_id       uuid not null references public.coaches(id) on delete cascade,
@@ -137,7 +137,7 @@ create policy "Service role full access to bookings"
 
 -- ─── PAYMENTS ────────────────────────────────────────────────────────────────
 create table if not exists public.payments (
-  id                  uuid primary key default uuid_generate_v4(),
+  id                  uuid primary key default gen_random_uuid(),
   booking_id          uuid not null references public.bookings(id) on delete cascade,
   customer_id         uuid not null references public.profiles(id) on delete cascade,
   coach_id            uuid not null references public.coaches(id) on delete cascade,
@@ -160,7 +160,7 @@ create policy "Customers can insert payments"
 
 -- ─── NOTIFICATIONS ───────────────────────────────────────────────────────────
 create table if not exists public.notifications (
-  id         uuid primary key default uuid_generate_v4(),
+  id         uuid primary key default gen_random_uuid(),
   user_id    uuid not null references public.profiles(id) on delete cascade,
   type       text,
   title      text,
@@ -177,11 +177,11 @@ create policy "Users see their own notifications"
 create policy "Users can update their own notifications"
   on public.notifications for update using (auth.uid() = user_id);
 create policy "Service role can insert notifications"
-  on public.notifications for insert using (auth.role() = 'service_role');
+  on public.notifications for insert with check (auth.role() = 'service_role');
 
 -- ─── REVIEWS ─────────────────────────────────────────────────────────────────
 create table if not exists public.reviews (
-  id          uuid primary key default uuid_generate_v4(),
+  id          uuid primary key default gen_random_uuid(),
   booking_id  uuid not null references public.bookings(id) on delete cascade,
   coach_id    uuid not null references public.coaches(id) on delete cascade,
   customer_id uuid not null references public.profiles(id) on delete cascade,

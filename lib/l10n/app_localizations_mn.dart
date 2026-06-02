@@ -9,7 +9,7 @@ class AppLocalizationsMn extends AppLocalizations {
   AppLocalizationsMn([String locale = 'mn']) : super(locale);
 
   @override
-  String get appName => 'Tennis Hub';
+  String get appName => 'MyClub';
 
   @override
   String get login => 'Нэвтрэх';
@@ -116,6 +116,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get bookNow => 'Одоо захиалах';
 
   @override
+  String get book => 'Захиалах';
+
+  @override
   String slotsLeft(int count) {
     return '$count байр үлдсэн';
   }
@@ -189,6 +192,9 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get proceed => 'Үргэлжлүүлэх';
+
+  @override
+  String get requestBooking => 'Захиалга илгээх';
 
   @override
   String get payment => 'Төлбөр';

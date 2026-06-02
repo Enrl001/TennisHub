@@ -15,13 +15,16 @@ void main() async {
   await Supabase.initialize(
     url: AppConstants.supabaseUrl,
     anonKey: AppConstants.supabaseAnonKey,
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
   );
 
-  runApp(const ProviderScope(child: TennisHubApp()));
+  runApp(const ProviderScope(child: MyClubApp()));
 }
 
-class TennisHubApp extends ConsumerWidget {
-  const TennisHubApp({super.key});
+class MyClubApp extends ConsumerWidget {
+  const MyClubApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,7 +32,7 @@ class TennisHubApp extends ConsumerWidget {
     final localeCode = ref.watch(localeProvider);
 
     return MaterialApp.router(
-      title: 'Tennis Hub',
+      title: 'MyClub',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       locale: Locale(localeCode),

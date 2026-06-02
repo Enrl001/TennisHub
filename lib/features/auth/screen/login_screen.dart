@@ -67,7 +67,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Text(l10n.signIn,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 8),
-                Text('Welcome back to Tennis Hub',
+                Text('Welcome back to MyClub',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey)),
                 const SizedBox(height: 36),
                 TextFormField(

@@ -9,6 +9,8 @@ import '../../features/auth/screen/register_screen.dart';
 import '../../features/auth/screen/role_select_screen.dart';
 import '../../features/auth/screen/settings_screen.dart';
 import '../../features/auth/screen/splash_screen.dart';
+import '../../features/booking/booking_flow.dart';
+import '../../features/booking/screens/booking_requested_screen.dart';
 import '../../features/booking/screens/booking_screen.dart';
 import '../../features/booking/screens/booking_success_screen.dart';
 import '../../features/booking/screens/payment_screen.dart';
@@ -25,15 +27,28 @@ import '../../shared/widgets/main_shell.dart';
 
 part 'app_router.g.dart';
 
+/// Notifies GoRouter when auth state changes, without rebuilding the router.
+class _AuthChangeNotifier extends ChangeNotifier {
+  _AuthChangeNotifier(Ref ref) {
+    ref.listen<AsyncValue<dynamic>>(authProvider, (_, __) {
+      notifyListeners();
+    });
+  }
+}
+
 @Riverpod(keepAlive: true)
 GoRouter appRouter(Ref ref) {
-  final authState = ref.watch(authProvider);
+  // GoRouter is created ONCE. Auth changes trigger refreshListenable
+  // so redirect is re-evaluated without rebuilding the whole router.
+  final notifier = _AuthChangeNotifier(ref);
 
   return GoRouter(
     initialLocation: '/splash',
+    refreshListenable: notifier,
     redirect: (context, state) {
-      final isLoading = authState.isLoading;
-      if (isLoading) return '/splash';
+      final authState = ref.read(authProvider);
+
+      if (authState.isLoading) return '/splash';
 
       final profile = authState.value;
       final loc = state.matchedLocation;
@@ -43,8 +58,15 @@ GoRouter appRouter(Ref ref) {
 
       if (profile == null && !isPublic) return '/onboarding';
       if (profile != null && isPublic && loc != '/splash') {
-        return profile.role == 'coach' ? '/coach-dashboard' : '/home';
+        return profile.role == 'coach' ? '/coach-home' : '/home';
       }
+
+      final path = state.uri.path;
+      final legacyBooking = legacyBookingPathRedirect(path);
+      if (legacyBooking != null) return legacyBooking;
+      final legacyCoach = legacyCoachPathRedirect(path);
+      if (legacyCoach != null) return legacyCoach;
+
       return null;
     },
     routes: [
@@ -71,6 +93,7 @@ GoRouter appRouter(Ref ref) {
         builder: (context, state, child) =>
             CoachShell(child: child),
         routes: [
+          GoRoute(path: '/coach-home', builder: (_, __) => const HomeScreen()),
           GoRoute(path: '/coach-dashboard', builder: (_, __) => const CoachDashboardScreen()),
           GoRoute(path: '/coach-calendar', builder: (_, __) => const CalendarScreen()),
           GoRoute(path: '/coach-notifications', builder: (_, __) => const NotificationsScreen()),
@@ -80,27 +103,71 @@ GoRouter appRouter(Ref ref) {
 
       // Standalone routes
       GoRoute(
-        path: '/coach/:coachId',
-        builder: (_, state) =>
-            CoachDetailScreen(coachId: state.pathParameters['coachId']!),
+        name: 'coachDetail',
+        path: '/coach',
+        builder: (_, state) {
+          final coachId = state.uri.queryParameters['coachId'];
+          if (coachId == null || coachId.isEmpty) {
+            return const Scaffold(
+              body: Center(child: Text('Missing coach')),
+            );
+          }
+          return CoachDetailScreen(coachId: Uri.decodeComponent(coachId));
+        },
       ),
       GoRoute(
-        path: '/booking/:serviceId',
-        builder: (_, state) =>
-            BookingScreen(serviceId: state.pathParameters['serviceId']!),
+        name: 'booking',
+        path: '/booking',
+        builder: (_, state) {
+          final serviceId = state.uri.queryParameters['serviceId'];
+          if (serviceId == null || serviceId.isEmpty) {
+            return const Scaffold(
+              body: Center(child: Text('Missing service')),
+            );
+          }
+          return BookingScreen(
+            serviceId: Uri.decodeComponent(serviceId),
+          );
+        },
       ),
       GoRoute(
-        path: '/payment/:bookingId',
-        builder: (_, state) => PaymentScreen(
-          bookingId: state.pathParameters['bookingId']!,
-          amount: double.parse(state.uri.queryParameters['amount'] ?? '0'),
-          currency: state.uri.queryParameters['currency'] ?? 'USD',
+        name: 'payment',
+        path: '/payment',
+        builder: (_, state) {
+          final bookingId = state.uri.queryParameters['bookingId'];
+          if (bookingId == null || bookingId.isEmpty) {
+            return const Scaffold(
+              body: Center(child: Text('Missing booking')),
+            );
+          }
+          return PaymentScreen(
+            bookingId: Uri.decodeComponent(bookingId),
+            amount: double.parse(state.uri.queryParameters['amount'] ?? '0'),
+            currency: state.uri.queryParameters['currency'] ?? 'MNT',
+            autoPay: state.uri.queryParameters['autoPay'] == 'true',
+          );
+        },
+      ),
+      GoRoute(
+        path: '/booking-requested',
+        builder: (_, state) => BookingRequestedScreen(
+          bookingId: state.uri.queryParameters['bookingId'],
         ),
       ),
       GoRoute(
-        path: '/booking-success/:bookingId',
-        builder: (_, state) => BookingSuccessScreen(
-            bookingId: state.pathParameters['bookingId']!),
+        name: 'bookingSuccess',
+        path: '/booking-success',
+        builder: (_, state) {
+          final bookingId = state.uri.queryParameters['bookingId'];
+          if (bookingId == null || bookingId.isEmpty) {
+            return const Scaffold(
+              body: Center(child: Text('Missing booking')),
+            );
+          }
+          return BookingSuccessScreen(
+            bookingId: Uri.decodeComponent(bookingId),
+          );
+        },
       ),
       GoRoute(
         path: '/coach-profile',

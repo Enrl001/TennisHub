@@ -49,7 +49,7 @@ final class NotificationsStreamProvider
 }
 
 String _$notificationsStreamHash() =>
-    r'9051ffe34fcf6cdd9cbb63b1d323e41f49821944';
+    r'a88d7ca98c172b69ace5fe1da937af2edd170df8';
 
 @ProviderFor(unreadCount)
 final unreadCountProvider = UnreadCountProvider._();
@@ -90,6 +90,60 @@ final class UnreadCountProvider extends $FunctionalProvider<int, int, int>
 }
 
 String _$unreadCountHash() => r'049ce559ad3a97b5649a1de0f903f9fa8479dbc3';
+
+@ProviderFor(HandledBookingNotifications)
+final handledBookingNotificationsProvider =
+    HandledBookingNotificationsProvider._();
+
+final class HandledBookingNotificationsProvider
+    extends $NotifierProvider<HandledBookingNotifications, Set<String>> {
+  HandledBookingNotificationsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'handledBookingNotificationsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$handledBookingNotificationsHash();
+
+  @$internal
+  @override
+  HandledBookingNotifications create() => HandledBookingNotifications();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Set<String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Set<String>>(value),
+    );
+  }
+}
+
+String _$handledBookingNotificationsHash() =>
+    r'dc029c0404e5e791dec6317b01caaaac7e848b6b';
+
+abstract class _$HandledBookingNotifications extends $Notifier<Set<String>> {
+  Set<String> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<Set<String>, Set<String>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<Set<String>, Set<String>>,
+              Set<String>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
 
 @ProviderFor(NotificationActions)
 final notificationActionsProvider = NotificationActionsProvider._();

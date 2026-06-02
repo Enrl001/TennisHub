@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/utils/extensions.dart';
 import '../../l10n/app_localizations.dart';
 import '../models/models.dart';
 
@@ -34,9 +34,8 @@ class _SlotPickerState extends State<SlotPicker> {
     return result;
   }
 
-  List<TimeSlot> _slotsForDate(DateTime date) => widget.slots
-      .where((s) => s.startsAt.isSameDay(date))
-      .toList();
+  List<TimeSlot> _slotsForDate(DateTime date) =>
+      widget.slots.where((s) => _isSameDay(s.startsAt, date)).toList();
 
   @override
   void initState() {
@@ -50,8 +49,9 @@ class _SlotPickerState extends State<SlotPicker> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final dates = _dates;
-    final slotsForDay =
-        _selectedDate != null ? _slotsForDate(_selectedDate!) : [];
+    final slotsForDay = _selectedDate != null
+        ? _slotsForDate(_selectedDate!)
+        : [];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +66,8 @@ class _SlotPickerState extends State<SlotPicker> {
             separatorBuilder: (_, __) => const SizedBox(width: 8),
             itemBuilder: (_, i) {
               final d = dates[i];
-              final selected = _selectedDate?.isSameDay(d) ?? false;
+              final selected =
+                  _selectedDate != null && _isSameDay(_selectedDate!, d);
               return GestureDetector(
                 onTap: () => setState(() {
                   _selectedDate = d;
@@ -80,7 +81,9 @@ class _SlotPickerState extends State<SlotPicker> {
                     color: selected ? AppColors.primary : Colors.white,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: selected ? AppColors.primary : AppColors.cardBorder,
+                      color: selected
+                          ? AppColors.primary
+                          : AppColors.cardBorder,
                     ),
                   ),
                   child: Column(
@@ -100,7 +103,9 @@ class _SlotPickerState extends State<SlotPicker> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: selected ? Colors.white : const Color(0xFF1A1A1A),
+                          color: selected
+                              ? Colors.white
+                              : const Color(0xFF1A1A1A),
                         ),
                       ),
                       Text(
@@ -127,66 +132,65 @@ class _SlotPickerState extends State<SlotPicker> {
               spacing: 8,
               runSpacing: 8,
               children: slotsForDay.map((slot) {
-                final isFull =
-                    slot.bookedCount >= widget.maxParticipants;
+                final isFull = slot.bookedCount >= widget.maxParticipants;
                 final isSelected = _selectedSlot?.id == slot.id;
-                final spotsLeft =
-                    (widget.maxParticipants - slot.bookedCount).toInt();
+                final spotsLeft = (widget.maxParticipants - slot.bookedCount)
+                    .toInt();
 
                 return GestureDetector(
                   onTap: isFull
                       ? null
                       : () => setState(() {
-                            _selectedSlot = slot;
-                            widget.onSlotSelected?.call(slot);
-                          }),
+                          _selectedSlot = slot;
+                          widget.onSlotSelected?.call(slot);
+                        }),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 10),
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: isFull
                           ? Colors.grey.shade100
                           : isSelected
-                              ? AppColors.primary
-                              : Colors.white,
+                          ? AppColors.primary
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: isFull
                             ? Colors.grey.shade300
                             : isSelected
-                                ? AppColors.primary
-                                : AppColors.cardBorder,
+                            ? AppColors.primary
+                            : AppColors.cardBorder,
                       ),
                     ),
                     child: Column(
                       children: [
                         Text(
-                          slot.startsAt.toDisplayTime(),
+                          _timeFormat.format(slot.startsAt),
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                             color: isFull
                                 ? Colors.grey
                                 : isSelected
-                                    ? Colors.white
-                                    : const Color(0xFF1A1A1A),
+                                ? Colors.white
+                                : const Color(0xFF1A1A1A),
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          isFull
-                              ? l10n.slotFull
-                              : l10n.slotsLeft(spotsLeft),
+                          isFull ? l10n.slotFull : l10n.slotsLeft(spotsLeft),
                           style: TextStyle(
                             fontSize: 11,
                             color: isFull
                                 ? Colors.grey
                                 : isSelected
-                                    ? Colors.white70
-                                    : spotsLeft <= 2
-                                        ? Colors.orange
-                                        : AppColors.groupLesson,
+                                ? Colors.white70
+                                : spotsLeft <= 2
+                                ? Colors.orange
+                                : AppColors.groupLesson,
                           ),
                         ),
                       ],
@@ -200,14 +204,33 @@ class _SlotPickerState extends State<SlotPicker> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: Center(
-              child: Text(l10n.noBookingsToday,
-                  style: const TextStyle(color: Colors.grey)),
+              child: Text(
+                l10n.noBookingsToday,
+                style: const TextStyle(color: Colors.grey),
+              ),
             ),
           ),
       ],
     );
   }
 
-  String _weekday(DateTime d) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][d.weekday - 1];
-  String _month(DateTime d) => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.month - 1];
+  String _weekday(DateTime d) =>
+      ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][d.weekday - 1];
+  String _month(DateTime d) => [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ][d.month - 1];
+  bool _isSameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+  static final _timeFormat = DateFormat('h:mm a');
 }

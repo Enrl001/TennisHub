@@ -51,7 +51,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Tennis Hub',
+              'MyClub',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 28,

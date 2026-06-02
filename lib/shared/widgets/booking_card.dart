@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/extensions.dart';
+import '../extensions/local_ext.dart';
 import '../models/models.dart';
 import 'service_chip.dart';
 
 class BookingCard extends StatelessWidget {
-  const BookingCard({super.key, required this.booking, this.isCoach = false, this.onTap});
+  const BookingCard({
+    super.key,
+    required this.booking,
+    this.isCoach = false,
+    this.locale = 'en',
+    this.onTap,
+  });
 
   final Booking booking;
   final bool isCoach;
+  final String locale;
   final VoidCallback? onTap;
 
   @override
@@ -16,12 +25,23 @@ class BookingCard extends StatelessWidget {
     final slot = booking.slot;
     final service = booking.service ?? booking.slot?.service;
     final color = AppColors.statusColor(booking.status);
+    final dateFormat = DateFormat('EEE, MMM d, yyyy');
+    final timeFormat = DateFormat('h:mm a');
 
-    return Card(
+    final title = service != null
+        ? service.localTitle(locale)
+        : (locale == 'mn' ? 'Сесс' : 'Session');
+
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: HubStyle.cardBorder),
+      ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -29,66 +49,114 @@ class BookingCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  if (service != null) ServiceChip(type: service.type, small: true),
+                  if (service != null)
+                    ServiceChip(type: service.type, small: true),
                   const Spacer(),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: color.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       booking.status.capitalize(),
-                      style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 10),
               Text(
-                service?.title ?? 'Session',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                title,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               if (isCoach && booking.customer != null) ...[
                 const SizedBox(height: 4),
-                Row(children: [
-                  const Icon(Icons.person_outline, size: 14, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text(booking.customer!.fullName ?? 'Customer', style: const TextStyle(color: Colors.grey, fontSize: 13)),
-                ]),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.person_outline,
+                      size: 14,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      booking.customer!.fullName ?? 'Customer',
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                  ],
+                ),
               ],
               if (!isCoach && booking.coach?.profile != null) ...[
                 const SizedBox(height: 4),
-                Row(children: [
-                  const Icon(Icons.sports_tennis, size: 14, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text(booking.coach!.profile!.fullName ?? 'Coach', style: const TextStyle(color: Colors.grey, fontSize: 13)),
-                ]),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.sports_tennis,
+                      size: 14,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      booking.coach!.profile!.fullName ?? 'Coach',
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                  ],
+                ),
               ],
               if (slot != null) ...[
                 const SizedBox(height: 8),
-                Row(children: [
-                  const Icon(Icons.calendar_today_outlined, size: 14, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text(slot.startsAt.toDisplayDate(), style: const TextStyle(fontSize: 13, color: Colors.grey)),
-                  const SizedBox(width: 12),
-                  const Icon(Icons.access_time_outlined, size: 14, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text(slot.startsAt.toDisplayTime(), style: const TextStyle(fontSize: 13, color: Colors.grey)),
-                ]),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.calendar_today_outlined,
+                      size: 14,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      dateFormat.format(slot.startsAt),
+                      style: const TextStyle(fontSize: 13, color: Colors.grey),
+                    ),
+                    const SizedBox(width: 12),
+                    const Icon(
+                      Icons.access_time_outlined,
+                      size: 14,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      timeFormat.format(slot.startsAt),
+                      style: const TextStyle(fontSize: 13, color: Colors.grey),
+                    ),
+                  ],
+                ),
               ],
               if (booking.amountPaid != null) ...[
                 const SizedBox(height: 8),
-                Row(children: [
-                  const Spacer(),
-                  Text(
-                    booking.amountPaid!.toCurrencyString(booking.currency ?? 'USD'),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                ]),
+                Row(
+                  children: [
+                    const Spacer(),
+                    Text(
+                      booking.amountPaid!.toCurrencyString(
+                        booking.currency ?? 'USD',
+                      ),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ],
           ),

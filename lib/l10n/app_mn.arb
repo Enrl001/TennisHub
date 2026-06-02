@@ -1,6 +1,6 @@
 {
   "@@locale": "mn",
-  "appName": "Tennis Hub",
+  "appName": "MyClub",
   "login": "Нэвтрэх",
   "register": "Бүртгүүлэх",
   "email": "Имэйл",
@@ -38,6 +38,7 @@
   "filterCommunity": "Нийтийн",
   "filterVirtual": "Виртуал",
   "bookNow": "Одоо захиалах",
+  "book": "Захиалах",
   "slotsLeft": "{count} байр үлдсэн",
   "perHour": "/цаг",
   "noCoachesFound": "Дасгалжуулагч олдсонгүй",
@@ -61,6 +62,7 @@
   "availableSpots": "{count} байр боломжтой",
   "slotFull": "Дүүрсэн",
   "proceed": "Үргэлжлүүлэх",
+  "requestBooking": "Захиалга илгээх",
   "payment": "Төлбөр",
   "cardNumber": "Картын дугаар",
   "expiryDate": "Дуусах хугацаа",

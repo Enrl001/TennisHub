@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
+import '../booking_flow.dart';
+import '../providers/booking_provider.dart';
 import '../providers/payment_provider.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
@@ -14,11 +15,13 @@ class PaymentScreen extends ConsumerStatefulWidget {
     required this.bookingId,
     required this.amount,
     required this.currency,
+    this.autoPay = false,
   });
 
   final String bookingId;
   final double amount;
   final String currency;
+  final bool autoPay;
 
   @override
   ConsumerState<PaymentScreen> createState() => _PaymentScreenState();
@@ -26,7 +29,22 @@ class PaymentScreen extends ConsumerStatefulWidget {
 
 class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   bool _launched = false;
+  bool _autoPayStarted = false;
   Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.autoPay) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _tryAutoPay());
+    }
+  }
+
+  Future<void> _tryAutoPay() async {
+    if (_autoPayStarted || _launched || !mounted) return;
+    _autoPayStarted = true;
+    await _openSmartpay();
+  }
 
   @override
   void dispose() {
@@ -40,7 +58,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         .createSmartpayInvoice(
           bookingId: widget.bookingId,
           amount: widget.amount,
-          description: 'Tennis Hub booking',
+          description: 'MyClub booking',
         );
     if (url == null || !mounted) return;
 
@@ -63,14 +81,20 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
   Future<void> _checkStatus() async {
     try {
-      final status = await ref
-          .read(paymentProvider.notifier)
-          .checkBookingStatus(widget.bookingId);
+      final notifier = ref.read(paymentProvider.notifier);
+      final paid = await notifier.checkPaymentComplete(widget.bookingId);
       if (!mounted) return;
-      if (status == 'confirmed') {
+      if (paid) {
         _timer?.cancel();
-        context.go('/booking-success/${widget.bookingId}');
-      } else if (status == 'cancelled') {
+        ref.invalidate(myBookingsProvider);
+        ref.invalidate(bookingDetailProvider(widget.bookingId));
+        ref.invalidate(bookingPaidProvider(widget.bookingId));
+        goBookingSuccess(context, widget.bookingId);
+        return;
+      }
+      final status = await notifier.bookingStatus(widget.bookingId);
+      if (!mounted) return;
+      if (status == 'cancelled') {
         _timer?.cancel();
         setState(() => _launched = false);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -89,15 +113,30 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     final payState = ref.watch(paymentProvider);
     final isLoading = payState.isLoading;
 
+    final isMn = Localizations.localeOf(context).languageCode == 'mn';
+
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.payment)),
+      backgroundColor: HubStyle.pageBg,
+      appBar: AppBar(
+        backgroundColor: HubStyle.pageBg,
+        title: Text(
+          l10n.payment,
+          style: const TextStyle(
+            color: HubStyle.hubOlive,
+            fontWeight: FontWeight.w900,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: HubStyle.hubOlive),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: _launched
-              ? _PollingView(onRefresh: _checkStatus)
+              ? _PollingView(isMn: isMn, onRefresh: _checkStatus)
               : _InvoiceView(
                   l10n: l10n,
+                  isMn: isMn,
                   amount: widget.amount,
                   currency: widget.currency,
                   isLoading: isLoading,
@@ -115,6 +154,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 class _InvoiceView extends StatelessWidget {
   const _InvoiceView({
     required this.l10n,
+    required this.isMn,
     required this.amount,
     required this.currency,
     required this.isLoading,
@@ -123,6 +163,7 @@ class _InvoiceView extends StatelessWidget {
   });
 
   final AppLocalizations l10n;
+  final bool isMn;
   final double amount;
   final String currency;
   final bool isLoading;
@@ -139,8 +180,8 @@ class _InvoiceView extends StatelessWidget {
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: AppColors.primary,
-            borderRadius: BorderRadius.circular(20),
+            color: HubStyle.darkPanel,
+            borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
           child: Column(
@@ -236,7 +277,9 @@ class _InvoiceView extends StatelessWidget {
               : const Icon(Icons.open_in_new_rounded, size: 20),
           label: Text(l10n.payWithSmartpay),
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFFF6B00),
+            backgroundColor: HubStyle.hubOlive,
+            foregroundColor: Colors.white,
+            minimumSize: const Size(double.infinity, 48),
           ),
         ),
         const SizedBox(height: 12),
@@ -271,8 +314,9 @@ class _BankChip extends StatelessWidget {
 // ─── Waiting / polling view ───────────────────────────────────────────────────
 
 class _PollingView extends StatelessWidget {
-  const _PollingView({required this.onRefresh});
+  const _PollingView({required this.isMn, required this.onRefresh});
 
+  final bool isMn;
   final Future<void> Function() onRefresh;
 
   @override
@@ -281,18 +325,20 @@ class _PollingView extends StatelessWidget {
       children: [
         const SizedBox(height: 60),
         const CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation(AppColors.primary)),
+            valueColor: AlwaysStoppedAnimation(HubStyle.hubOlive)),
         const SizedBox(height: 32),
         Text(
-          'Төлбөр хүлээж байна...',
+          isMn ? 'Төлбөр хүлээж байна...' : 'Waiting for payment...',
           style: Theme.of(context)
               .textTheme
               .titleMedium
-              ?.copyWith(fontWeight: FontWeight.w600),
+              ?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 8),
         Text(
-          'Smartpay-д төлбөрөө гүйцэтгэнэ үү.\nТөлбөр хийсний дараа автоматаар шинэчлэгдэнэ.',
+          isMn
+              ? 'Smartpay-д төлбөрөө гүйцэтгэнэ үү.\nТөлбөр хийсний дараа автоматаар шинэчлэгдэнэ.'
+              : 'Complete payment in Smartpay.\nThis screen updates automatically.',
           textAlign: TextAlign.center,
           style:
               Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
@@ -301,7 +347,11 @@ class _PollingView extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: onRefresh,
           icon: const Icon(Icons.refresh_rounded, size: 18),
-          label: const Text('Дахин шалгах'),
+          label: Text(isMn ? 'Дахин шалгах' : 'Check again'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: HubStyle.hubOlive,
+            side: const BorderSide(color: HubStyle.hubOlive),
+          ),
         ),
       ],
     );

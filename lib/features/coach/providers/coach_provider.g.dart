@@ -46,7 +46,7 @@ final class CoachesProvider
   }
 }
 
-String _$coachesHash() => r'8308c9bf008a4e4417d3a856a16348fc6617a4a2';
+String _$coachesHash() => r'228449c60e84fc1a46512ebab4d248dbca023f38';
 
 @ProviderFor(coachDetail)
 final coachDetailProvider = CoachDetailFamily._();
@@ -97,7 +97,7 @@ final class CoachDetailProvider
   }
 }
 
-String _$coachDetailHash() => r'c67e398cc3040d9ce07a6a3f6beba39e068c20c0';
+String _$coachDetailHash() => r'5850477d78ce5732b62a365d4fece2beb631f2f0';
 
 final class CoachDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Coach>, String> {
@@ -217,7 +217,7 @@ final class CoachProfileNotifierProvider
 }
 
 String _$coachProfileNotifierHash() =>
-    r'767b9f637e11877028cbd3fe32595b1a30d72525';
+    r'cf25c15c86d57be445eb2ca6c0dcd368159ff3c9';
 
 abstract class _$CoachProfileNotifier extends $AsyncNotifier<void> {
   FutureOr<void> build();
@@ -293,7 +293,7 @@ final class CoachUpcomingSlotsProvider
 }
 
 String _$coachUpcomingSlotsHash() =>
-    r'2b436a5ea6682766e2c7b33ead4627f0b9291f85';
+    r'109d36404edf0e1beefa0e623183424ea4f505a5';
 
 final class CoachUpcomingSlotsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<TimeSlot>>, String> {

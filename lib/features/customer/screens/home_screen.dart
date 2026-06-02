@@ -26,7 +26,7 @@ class HomeScreen extends ConsumerWidget {
             title: Row(children: [
               const Icon(Icons.sports_tennis, color: AppColors.primary),
               const SizedBox(width: 8),
-              Text('Tennis Hub',
+              Text('MyClub',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                         color: AppColors.primary,

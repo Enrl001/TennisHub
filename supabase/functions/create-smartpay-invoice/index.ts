@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -21,16 +22,26 @@ serve(async (req) => {
       )
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const username = Deno.env.get('SMARTPAY_USERNAME')
+    const password = Deno.env.get('SMARTPAY_PASSWORD')
+    const accountNumber = Deno.env.get('SMARTPAY_ACCOUNT_NUMBER')
+    if (!username || !password || !accountNumber) {
+      return new Response(
+        JSON.stringify({
+          error: 'Smartpay is not configured. Set SMARTPAY_USERNAME, SMARTPAY_PASSWORD, and SMARTPAY_ACCOUNT_NUMBER in Supabase secrets.',
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      )
+    }
 
-    // Step 1: Authenticate with Smartpay
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const roundedAmount = Math.round(Number(amount))
+
+    // Step 1: Authenticate with Smartpay (POST /api/v1/merchant/auth)
     const authRes = await fetch('https://apispay.esukh.mn/api/v1/merchant/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: Deno.env.get('SMARTPAY_USERNAME'),
-        password: Deno.env.get('SMARTPAY_PASSWORD'),
-      }),
+      body: JSON.stringify({ username, password }),
     })
     const authData = await authRes.json()
     if (!authData.success) {
@@ -41,19 +52,21 @@ serve(async (req) => {
     }
 
     // Step 2: Create invoice
+    const itemDescription = description ?? `MyClub Booking ${bookingId}`
+    const webhookUrl = `${supabaseUrl}/functions/v1/smartpay-webhook`
     const invoiceBody: Record<string, unknown> = {
-      amount: Math.round(amount),
-      description: description ?? `Tennis Hub Booking ${bookingId}`,
+      amount: roundedAmount,
+      description: itemDescription,
       returnUrl: `${supabaseUrl}/functions/v1/smartpay-return?bookingId=${bookingId}`,
-      successCallback: `${supabaseUrl}/functions/v1/smartpay-webhook`,
+      successCallback: webhookUrl,
       invoiceItems: [
         {
-          amount: Math.round(amount),
-          accountNumber: Deno.env.get('SMARTPAY_ACCOUNT_NUMBER'),
+          amount: roundedAmount,
+          accountNumber,
           bankCode: Deno.env.get('SMARTPAY_BANK_CODE') ?? '050000',
-          description: description ?? `Tennis Hub Booking ${bookingId}`,
-          productTypeId: 1,
-          successCallback: `${supabaseUrl}/functions/v1/smartpay-webhook`,
+          description: itemDescription,
+          productTypeId: Number(Deno.env.get('SMARTPAY_PRODUCT_TYPE_ID') ?? '1'),
+          successCallback: webhookUrl,
           vatInfo: null,
         },
       ],
@@ -94,7 +107,7 @@ serve(async (req) => {
       customer_id: booking?.customer_id,
       coach_id: booking?.coach_id,
       status: 'pending',
-      amount: Math.round(amount),
+      amount: roundedAmount,
       currency: booking?.currency ?? 'MNT',
       provider_payment_id: String(invoiceData.invoiceId),
     })

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/utils/validators.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/coach_provider.dart';
@@ -19,9 +18,7 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
   final _formKey = GlobalKey<FormState>();
   String _type = 'private_lesson';
   final _titleCtrl = TextEditingController();
-  final _titleMnCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
-  final _descMnCtrl = TextEditingController();
   final _durationCtrl = TextEditingController(text: '60');
   final _priceCtrl = TextEditingController();
   final _currencyCtrl = TextEditingController(text: 'USD');
@@ -33,9 +30,7 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
   @override
   void dispose() {
     _titleCtrl.dispose();
-    _titleMnCtrl.dispose();
     _descCtrl.dispose();
-    _descMnCtrl.dispose();
     _durationCtrl.dispose();
     _priceCtrl.dispose();
     _currencyCtrl.dispose();
@@ -54,14 +49,18 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
       final coachId = await ref
           .read(coachProfileProvider.notifier)
           .ensureCoachRecord(profile.id);
+      final locale = ref.read(localeProvider);
+      final isMn = locale == 'mn';
+      final title = _titleCtrl.text.trim();
+      final description = _descCtrl.text.trim();
 
       await ref.read(coachProfileProvider.notifier).addService({
         'coach_id': coachId,
         'type': _type,
-        'title': _titleCtrl.text.trim(),
-        'title_mn': _titleMnCtrl.text.trim(),
-        'description': _descCtrl.text.trim(),
-        'description_mn': _descMnCtrl.text.trim(),
+        'title': title,
+        'title_mn': isMn ? title : null,
+        'description': description,
+        'description_mn': isMn ? description : null,
         'duration_minutes': int.tryParse(_durationCtrl.text) ?? 60,
         'price_amount': double.tryParse(_priceCtrl.text) ?? 0,
         'currency': _currencyCtrl.text.trim(),
@@ -73,15 +72,18 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
       });
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Service added!')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Service added!')));
       context.pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: AppColors.statusCancelled,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: AppColors.statusCancelled,
+        ),
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -90,6 +92,7 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final locale = ref.watch(localeProvider);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.addService)),
       body: SafeArea(
@@ -99,11 +102,10 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
             key: _formKey,
             child: ServiceForm(
               selectedType: _type,
+              locale: locale,
               onTypeChanged: (t) => setState(() => _type = t),
               titleCtrl: _titleCtrl,
-              titleMnCtrl: _titleMnCtrl,
               descCtrl: _descCtrl,
-              descMnCtrl: _descMnCtrl,
               durationCtrl: _durationCtrl,
               priceCtrl: _priceCtrl,
               currencyCtrl: _currencyCtrl,

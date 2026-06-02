@@ -64,7 +64,7 @@ final class ServiceSlotsProvider
   }
 }
 
-String _$serviceSlotsHash() => r'6d8eeb727dadb575f0998c8cf4ed45035ef2fff7';
+String _$serviceSlotsHash() => r'e6f37287c16c7f058849b9556472844a636a3a7e';
 
 final class ServiceSlotsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<TimeSlot>>, String> {
@@ -121,7 +121,47 @@ final class MyBookingsProvider
   }
 }
 
-String _$myBookingsHash() => r'bfa1d29934a301dc68b04e74ac5cd46c09ca3afb';
+String _$myBookingsHash() => r'14b1bcedc7a4c153e611733bf614d4dc02758c3d';
+
+@ProviderFor(coachCalendarBookings)
+final coachCalendarBookingsProvider = CoachCalendarBookingsProvider._();
+
+final class CoachCalendarBookingsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Booking>>,
+          List<Booking>,
+          FutureOr<List<Booking>>
+        >
+    with $FutureModifier<List<Booking>>, $FutureProvider<List<Booking>> {
+  CoachCalendarBookingsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'coachCalendarBookingsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$coachCalendarBookingsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Booking>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Booking>> create(Ref ref) {
+    return coachCalendarBookings(ref);
+  }
+}
+
+String _$coachCalendarBookingsHash() =>
+    r'40e9b90c93ad47b3c944b2754b2e131bcdc71588';
 
 @ProviderFor(coachBookings)
 final coachBookingsProvider = CoachBookingsProvider._();
@@ -160,7 +200,7 @@ final class CoachBookingsProvider
   }
 }
 
-String _$coachBookingsHash() => r'1df6fc0cbbc11d8ebab59d972145c1981ebd7b3c';
+String _$coachBookingsHash() => r'68afa7bdda2688d939a4798329bafaa712dfbd63';
 
 @ProviderFor(BookingNotifier)
 final bookingProvider = BookingNotifierProvider._();
@@ -186,7 +226,7 @@ final class BookingNotifierProvider
   BookingNotifier create() => BookingNotifier();
 }
 
-String _$bookingNotifierHash() => r'5fff81d846a1284d0183a9842a02234b01560993';
+String _$bookingNotifierHash() => r'108585fbf9ec0ea2aa14c07ebb16cd1f627f75ea';
 
 abstract class _$BookingNotifier extends $AsyncNotifier<void> {
   FutureOr<void> build();

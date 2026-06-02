@@ -25,6 +25,22 @@ class _EditCoachProfileScreenState
   final _yearsCtrl = TextEditingController();
   final _certCtrl = TextEditingController();
   bool _loading = false;
+  bool _initialized = false;
+
+  void _prefill(WidgetRef ref) {
+    if (_initialized) return;
+    _initialized = true;
+    final profile = ref.read(currentProfileProvider);
+    _nameCtrl.text = profile?.fullName ?? '';
+    final coach = ref.read(myCoachProfileProvider).value;
+    if (coach != null) {
+      _bioCtrl.text = coach.bio ?? '';
+      _bioMnCtrl.text = coach.bioMn ?? '';
+      _locationCtrl.text = coach.location ?? '';
+      _yearsCtrl.text = coach.yearsExperience?.toString() ?? '';
+      _certCtrl.text = (coach.certifications ?? []).join(', ');
+    }
+  }
 
   @override
   void dispose() {
@@ -43,38 +59,40 @@ class _EditCoachProfileScreenState
     try {
       final profile = ref.read(currentProfileProvider);
       if (profile == null) return;
+      final isCoach = profile.role == 'coach';
 
-      // Update profile name
+      // Always update name
       await ref.read(authProvider.notifier).updateProfile({
         'full_name': _nameCtrl.text.trim(),
       });
 
-      // Ensure coach record exists
-      final coachId = await ref
-          .read(coachProfileProvider.notifier)
-          .ensureCoachRecord(profile.id);
+      if (isCoach) {
+        // Ensure coach record exists
+        final coachId = await ref
+            .read(coachProfileProvider.notifier)
+            .ensureCoachRecord(profile.id);
 
-      // Update coach record
-      final certs = _certCtrl.text.isEmpty
-          ? []
-          : _certCtrl.text.split(',').map((e) => e.trim()).toList();
-      await ref.read(coachProfileProvider.notifier).updateCoachProfile(
-        coachId,
-        {
-          'bio': _bioCtrl.text.trim(),
-          'bio_mn': _bioMnCtrl.text.trim(),
-          'location': _locationCtrl.text.trim(),
-          if (_yearsCtrl.text.isNotEmpty)
-            'years_experience': int.tryParse(_yearsCtrl.text) ?? 0,
-          'certifications': certs,
-        },
-      );
+        final certs = _certCtrl.text.isEmpty
+            ? []
+            : _certCtrl.text.split(',').map((e) => e.trim()).toList();
+        await ref.read(coachProfileProvider.notifier).updateCoachProfile(
+          coachId,
+          {
+            'bio': _bioCtrl.text.trim(),
+            'bio_mn': _bioMnCtrl.text.trim(),
+            'location': _locationCtrl.text.trim(),
+            if (_yearsCtrl.text.isNotEmpty)
+              'years_experience': int.tryParse(_yearsCtrl.text) ?? 0,
+            'certifications': certs,
+          },
+        );
+      }
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profile saved!')),
       );
-      context.go('/coach-dashboard');
+      context.pop();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -88,7 +106,9 @@ class _EditCoachProfileScreenState
 
   @override
   Widget build(BuildContext context) {
+    _prefill(ref);
     final l10n = AppLocalizations.of(context);
+    final isCoach = ref.read(currentProfileProvider)?.role == 'coach';
     return Scaffold(
       appBar: AppBar(title: Text(l10n.editProfile)),
       body: SafeArea(
@@ -107,55 +127,61 @@ class _EditCoachProfileScreenState
                   ),
                   validator: Validators.required,
                 ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: _bioCtrl,
-                  decoration: InputDecoration(
-                    labelText: l10n.bio,
-                    alignLabelWithHint: true,
+                if (isCoach) ...[
+                  const SizedBox(height: 14),
+                  TextFormField(
+                    controller: _bioCtrl,
+                    decoration: InputDecoration(
+                      labelText: l10n.bio,
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 4,
                   ),
-                  maxLines: 4,
-                ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: _bioMnCtrl,
-                  decoration: InputDecoration(
-                    labelText: l10n.bioMn,
-                    alignLabelWithHint: true,
+                  const SizedBox(height: 14),
+                  TextFormField(
+                    controller: _bioMnCtrl,
+                    decoration: InputDecoration(
+                      labelText: l10n.bioMn,
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 4,
                   ),
-                  maxLines: 4,
-                ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: _locationCtrl,
-                  decoration: InputDecoration(
-                    labelText: l10n.courtAddress,
-                    prefixIcon: const Icon(Icons.location_on_outlined),
+                  const SizedBox(height: 14),
+                  TextFormField(
+                    controller: _locationCtrl,
+                    decoration: InputDecoration(
+                      labelText: l10n.courtAddress,
+                      prefixIcon: const Icon(Icons.location_on_outlined),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: _yearsCtrl,
-                  decoration: InputDecoration(
-                    labelText: l10n.yearsExperience,
-                    prefixIcon: const Icon(Icons.workspace_premium_outlined),
+                  const SizedBox(height: 14),
+                  TextFormField(
+                    controller: _yearsCtrl,
+                    decoration: InputDecoration(
+                      labelText: l10n.yearsExperience,
+                      prefixIcon: const Icon(Icons.workspace_premium_outlined),
+                    ),
+                    keyboardType: TextInputType.number,
                   ),
-                  keyboardType: TextInputType.number,
-                ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: _certCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Certifications (comma-separated)',
-                    hintText: 'e.g. ITF Level 1, PTR Professional',
-                    prefixIcon: Icon(Icons.verified_outlined),
+                  const SizedBox(height: 14),
+                  TextFormField(
+                    controller: _certCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Certifications (comma-separated)',
+                      hintText: 'e.g. ITF Level 1, PTR Professional',
+                      prefixIcon: Icon(Icons.verified_outlined),
+                    ),
                   ),
-                ),
+                ],
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: _loading ? null : _save,
                   child: _loading
-                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white))
                       : Text(l10n.saveChanges),
                 ),
               ],

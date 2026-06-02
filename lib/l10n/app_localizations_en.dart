@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'Tennis Hub';
+  String get appName => 'MyClub';
 
   @override
   String get login => 'Login';
@@ -115,6 +115,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookNow => 'Book Now';
 
   @override
+  String get book => 'Book';
+
+  @override
   String slotsLeft(int count) {
     return '$count spots left';
   }
@@ -188,6 +191,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get proceed => 'Proceed';
+
+  @override
+  String get requestBooking => 'Request Booking';
 
   @override
   String get payment => 'Payment';

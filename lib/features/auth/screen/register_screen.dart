@@ -15,13 +15,16 @@ class RegisterScreen extends ConsumerStatefulWidget {
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _pwCtrl = TextEditingController();
   bool _obscure = true;
   bool _loading = false;
+  String _selectedRole = 'customer';
 
   @override
   void dispose() {
+    _nameCtrl.dispose();
     _emailCtrl.dispose();
     _pwCtrl.dispose();
     super.dispose();
@@ -31,18 +34,38 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
     try {
-      // Pre-register with temp role; role-select will update
-      await ref.read(authProvider.notifier).signUp(
+      final needsConfirmation = await ref.read(authProvider.notifier).signUp(
             email: _emailCtrl.text.trim(),
             password: _pwCtrl.text,
-            role: 'customer',
+            role: _selectedRole,
+            fullName: _nameCtrl.text.trim(),
           );
       if (!mounted) return;
-      context.go('/role-select');
-    } catch (e) {
+      if (needsConfirmation) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Check your email and click the confirmation link, then sign in.'),
+          duration: Duration(seconds: 6),
+        ));
+      } else {
+        if (_selectedRole == 'coach') {
+          context.go('/edit-coach-profile');
+        } else {
+          context.go('/home');
+        }
+      }
+    } catch (e, st) {
+      debugPrint('REGISTER ERROR: $e\n$st');
       if (!mounted) return;
+      String message = e.toString();
+      if (message.contains('already registered') || message.contains('already been registered')) {
+        message = 'This email is already registered. Try signing in instead.';
+      } else if (message.contains('Password should be')) {
+        message = 'Password must be at least 6 characters.';
+      } else if (message.contains('Unable to validate email')) {
+        message = 'Please enter a valid email address.';
+      }
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: AppColors.statusCancelled));
+          SnackBar(content: Text(message), backgroundColor: AppColors.statusCancelled));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -64,9 +87,24 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 Text(l10n.signUp,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 8),
-                Text('Create your Tennis Hub account',
+                Text('Create your MyClub account',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey)),
                 const SizedBox(height: 32),
+
+                // Full name
+                TextFormField(
+                  controller: _nameCtrl,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(
+                    labelText: 'Full name',
+                    prefixIcon: Icon(Icons.person_outline),
+                  ),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Please enter your name' : null,
+                ),
+                const SizedBox(height: 16),
+
+                // Email
                 TextFormField(
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
@@ -77,6 +115,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   validator: Validators.email,
                 ),
                 const SizedBox(height: 16),
+
+                // Password
                 TextFormField(
                   controller: _pwCtrl,
                   obscureText: _obscure,
@@ -90,7 +130,34 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                   validator: Validators.password,
                 ),
+                const SizedBox(height: 28),
+
+                // Role selection
+                Text('I am a…',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                const SizedBox(height: 12),
+                Row(children: [
+                  Expanded(
+                    child: _RoleOption(
+                      icon: Icons.person,
+                      label: 'Player',
+                      selected: _selectedRole == 'customer',
+                      onTap: () => setState(() => _selectedRole = 'customer'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _RoleOption(
+                      icon: Icons.sports_tennis,
+                      label: 'Coach',
+                      selected: _selectedRole == 'coach',
+                      onTap: () => setState(() => _selectedRole = 'coach'),
+                    ),
+                  ),
+                ]),
                 const SizedBox(height: 32),
+
+                // Submit
                 ElevatedButton(
                   onPressed: _loading ? null : _submit,
                   child: _loading
@@ -123,6 +190,49 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RoleOption extends StatelessWidget {
+  const _RoleOption({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary.withValues(alpha: 0.1) : Colors.transparent,
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.cardBorder,
+            width: selected ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: selected ? AppColors.primary : Colors.grey, size: 28),
+            const SizedBox(height: 6),
+            Text(label,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: selected ? AppColors.primary : Colors.grey,
+                )),
+          ],
         ),
       ),
     );
