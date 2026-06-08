@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// Stitch design system — Coach Hub / MyClub.
 class AppColors {
   AppColors._();
 
-  static const Color primary = Color(0xFF2D6A4F);
+  /// Brand olive (Stitch primary).
+  static const Color primary = Color(0xFF526300);
   static const Color tennisGreen = Color(0xFFCCE226);
   static const Color accent = Color(0xFFCCE226);
-  static const Color background = Color(0xFFFFFFFF);
-  static const Color cardBorder = Color(0xFFF0F0F0);
+  static const Color background = Color(0xFFF5F6F8);
+  static const Color cardBorder = Color(0xFFE4E6DC);
   static const Color white = Colors.white;
 
   // Service type colors
@@ -54,16 +56,82 @@ class AppColors {
   }
 }
 
-/// Shared layout tokens used by Coach Hub and customer booking flows.
+/// Shared layout tokens — Stitch project 2470079703981227643.
 class HubStyle {
   HubStyle._();
 
   static const Color pageBg = Color(0xFFF5F6F8);
   static const Color hubOlive = Color(0xFF526300);
+  static const Color hubOliveDark = Color(0xFF4B5F00);
+  static const Color accentLime = Color(0xFFCCE226);
   static const Color cardBorder = Color(0xFFE4E6DC);
+  static const Color cardBg = Colors.white;
   static const Color darkPanel = Color(0xFF252B2B);
   static const Color textPrimary = Color(0xFF181A20);
   static const Color textMuted = Color(0xFF6B7280);
+  static const Color slateMuted = Color(0xFF53657E);
+
+  static const double radiusSm = 8;
+  static const double radiusMd = 12;
+
+  static const TextStyle brandTitle = TextStyle(
+    color: hubOlive,
+    fontSize: 18,
+    fontWeight: FontWeight.w900,
+    fontStyle: FontStyle.italic,
+    letterSpacing: 0.2,
+  );
+
+  static const TextStyle sectionLabel = TextStyle(
+    color: hubOliveDark,
+    fontSize: 11,
+    fontWeight: FontWeight.w800,
+    letterSpacing: 0.6,
+  );
+
+  static const TextStyle bodyMuted = TextStyle(
+    color: textMuted,
+    fontSize: 14,
+    height: 1.45,
+  );
+
+  /// Calendar / schedule section eyebrow (matches hub section labels).
+  static const TextStyle calendarEyebrow = TextStyle(
+    color: textMuted,
+    fontSize: 11,
+    fontWeight: FontWeight.w800,
+    letterSpacing: 0.6,
+  );
+
+  static const TextStyle calendarHeadline = TextStyle(
+    color: textPrimary,
+    fontSize: 24,
+    fontWeight: FontWeight.w800,
+    height: 1.15,
+  );
+
+  static const TextStyle calendarPill = TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle timelineTitle = TextStyle(
+    color: textPrimary,
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
+    height: 1.25,
+  );
+
+  static const TextStyle timelineMeta = TextStyle(
+    color: hubOlive,
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const TextStyle timelineBadge = TextStyle(
+    fontSize: 10,
+    fontWeight: FontWeight.w700,
+  );
 }
 
 class AppTheme {
@@ -71,104 +139,141 @@ class AppTheme {
 
   static ThemeData light() {
     final base = ThemeData.light(useMaterial3: true);
+    final textTheme = GoogleFonts.poppinsTextTheme(base.textTheme);
+
     return base.copyWith(
       colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
-        primary: AppColors.primary,
-        secondary: AppColors.tennisGreen,
-        surface: Colors.white,
+        seedColor: HubStyle.hubOlive,
+        primary: HubStyle.hubOlive,
+        secondary: HubStyle.accentLime,
+        surface: HubStyle.cardBg,
       ),
-      scaffoldBackgroundColor: Colors.white,
-      textTheme: GoogleFonts.poppinsTextTheme(base.textTheme),
+      scaffoldBackgroundColor: HubStyle.pageBg,
+      textTheme: textTheme.apply(
+        bodyColor: HubStyle.textPrimary,
+        displayColor: HubStyle.textPrimary,
+      ),
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.white,
+        backgroundColor: HubStyle.pageBg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: GoogleFonts.poppins(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: const Color(0xFF1A1A1A),
-        ),
-        iconTheme: const IconThemeData(color: Color(0xFF1A1A1A)),
+        titleTextStyle: HubStyle.brandTitle.copyWith(fontSize: 17),
+        iconTheme: const IconThemeData(color: HubStyle.hubOlive),
       ),
       cardTheme: CardThemeData(
-        color: Colors.white,
+        color: HubStyle.cardBg,
         elevation: 0,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppColors.cardBorder),
+          borderRadius: BorderRadius.circular(HubStyle.radiusSm),
+          side: const BorderSide(color: HubStyle.cardBorder),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: HubStyle.cardBg,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.cardBorder),
+          borderRadius: BorderRadius.circular(HubStyle.radiusSm),
+          borderSide: const BorderSide(color: HubStyle.cardBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.cardBorder),
+          borderRadius: BorderRadius.circular(HubStyle.radiusSm),
+          borderSide: const BorderSide(color: HubStyle.cardBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide:
-              const BorderSide(color: AppColors.tennisGreen, width: 2),
+          borderRadius: BorderRadius.circular(HubStyle.radiusSm),
+          borderSide: const BorderSide(color: HubStyle.hubOlive, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(HubStyle.radiusSm),
           borderSide: const BorderSide(color: AppColors.statusCancelled),
         ),
+        labelStyle: const TextStyle(color: HubStyle.textMuted),
+        hintStyle: const TextStyle(color: HubStyle.textMuted),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.tennisGreen,
-          foregroundColor: const Color(0xFF1A3A10),
-          minimumSize: const Size(double.infinity, 52),
+          backgroundColor: HubStyle.hubOlive,
+          foregroundColor: Colors.white,
+          minimumSize: const Size(double.infinity, 48),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(HubStyle.radiusSm),
           ),
           textStyle: GoogleFonts.poppins(
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.w700,
           ),
           elevation: 0,
         ),
       ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: HubStyle.hubOlive,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(HubStyle.radiusSm),
+          ),
+          textStyle: GoogleFonts.poppins(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.tennisGreen,
-        foregroundColor: Color(0xFF1A3A10),
+        backgroundColor: HubStyle.hubOlive,
+        foregroundColor: Colors.white,
         elevation: 2,
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primary,
-          minimumSize: const Size(double.infinity, 52),
-          side: const BorderSide(color: AppColors.primary),
+          foregroundColor: HubStyle.hubOlive,
+          minimumSize: const Size(double.infinity, 48),
+          side: const BorderSide(color: HubStyle.hubOlive),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(HubStyle.radiusSm),
           ),
           textStyle: GoogleFonts.poppins(
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Colors.white,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: Color(0xFF9E9E9E),
+        backgroundColor: HubStyle.cardBg,
+        selectedItemColor: HubStyle.hubOlive,
+        unselectedItemColor: HubStyle.textMuted,
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 0,
+        selectedLabelStyle: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: TextStyle(fontSize: 11),
+      ),
+      dividerTheme: const DividerThemeData(
+        color: HubStyle.cardBorder,
+        thickness: 1,
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: Colors.white,
-        selectedColor: AppColors.tennisGreen.withOpacity(0.25),
+        backgroundColor: HubStyle.cardBg,
+        selectedColor: HubStyle.hubOlive.withValues(alpha: 0.12),
         labelStyle: GoogleFonts.poppins(fontSize: 13),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        side: const BorderSide(color: AppColors.cardBorder),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(HubStyle.radiusMd),
+        ),
+        side: const BorderSide(color: HubStyle.cardBorder),
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: HubStyle.hubOlive,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(HubStyle.radiusSm),
+        ),
       ),
     );
   }

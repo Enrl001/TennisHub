@@ -635,7 +635,7 @@ $ProfileCopyWith<$Res>? get profile {
 /// @nodoc
 mixin _$Service {
 
- String get id;@JsonKey(name: 'coach_id') String get coachId; String get type; String get title;@JsonKey(name: 'title_mn') String? get titleMn; String? get description;@JsonKey(name: 'description_mn') String? get descriptionMn;@JsonKey(name: 'duration_minutes') int? get durationMinutes;@JsonKey(name: 'price_amount') double? get priceAmount; String? get currency;@JsonKey(name: 'max_participants') int? get maxParticipants;@JsonKey(name: 'video_platform') String? get videoPlatform;@JsonKey(name: 'video_url') String? get videoUrl;@JsonKey(name: 'is_active') bool get isActive;
+ String get id;@JsonKey(name: 'coach_id') String get coachId; String get type; String get title;@JsonKey(name: 'title_mn') String? get titleMn; String? get description;@JsonKey(name: 'description_mn') String? get descriptionMn;@JsonKey(name: 'duration_minutes') int? get durationMinutes;@JsonKey(name: 'price_amount') double? get priceAmount; String? get currency;@JsonKey(name: 'max_participants') int? get maxParticipants;@JsonKey(name: 'video_platform') String? get videoPlatform;@JsonKey(name: 'video_url') String? get videoUrl; String? get location;@JsonKey(name: 'location_mn') String? get locationMn;@JsonKey(name: 'required_equipment') String? get requiredEquipment;@JsonKey(name: 'required_equipment_mn') String? get requiredEquipmentMn;@JsonKey(name: 'is_active') bool get isActive;
 /// Create a copy of Service
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -648,16 +648,16 @@ $ServiceCopyWith<Service> get copyWith => _$ServiceCopyWithImpl<Service>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Service&&(identical(other.id, id) || other.id == id)&&(identical(other.coachId, coachId) || other.coachId == coachId)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.titleMn, titleMn) || other.titleMn == titleMn)&&(identical(other.description, description) || other.description == description)&&(identical(other.descriptionMn, descriptionMn) || other.descriptionMn == descriptionMn)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.maxParticipants, maxParticipants) || other.maxParticipants == maxParticipants)&&(identical(other.videoPlatform, videoPlatform) || other.videoPlatform == videoPlatform)&&(identical(other.videoUrl, videoUrl) || other.videoUrl == videoUrl)&&(identical(other.isActive, isActive) || other.isActive == isActive));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Service&&(identical(other.id, id) || other.id == id)&&(identical(other.coachId, coachId) || other.coachId == coachId)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.titleMn, titleMn) || other.titleMn == titleMn)&&(identical(other.description, description) || other.description == description)&&(identical(other.descriptionMn, descriptionMn) || other.descriptionMn == descriptionMn)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.maxParticipants, maxParticipants) || other.maxParticipants == maxParticipants)&&(identical(other.videoPlatform, videoPlatform) || other.videoPlatform == videoPlatform)&&(identical(other.videoUrl, videoUrl) || other.videoUrl == videoUrl)&&(identical(other.location, location) || other.location == location)&&(identical(other.locationMn, locationMn) || other.locationMn == locationMn)&&(identical(other.requiredEquipment, requiredEquipment) || other.requiredEquipment == requiredEquipment)&&(identical(other.requiredEquipmentMn, requiredEquipmentMn) || other.requiredEquipmentMn == requiredEquipmentMn)&&(identical(other.isActive, isActive) || other.isActive == isActive));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,coachId,type,title,titleMn,description,descriptionMn,durationMinutes,priceAmount,currency,maxParticipants,videoPlatform,videoUrl,isActive);
+int get hashCode => Object.hash(runtimeType,id,coachId,type,title,titleMn,description,descriptionMn,durationMinutes,priceAmount,currency,maxParticipants,videoPlatform,videoUrl,location,locationMn,requiredEquipment,requiredEquipmentMn,isActive);
 
 @override
 String toString() {
-  return 'Service(id: $id, coachId: $coachId, type: $type, title: $title, titleMn: $titleMn, description: $description, descriptionMn: $descriptionMn, durationMinutes: $durationMinutes, priceAmount: $priceAmount, currency: $currency, maxParticipants: $maxParticipants, videoPlatform: $videoPlatform, videoUrl: $videoUrl, isActive: $isActive)';
+  return 'Service(id: $id, coachId: $coachId, type: $type, title: $title, titleMn: $titleMn, description: $description, descriptionMn: $descriptionMn, durationMinutes: $durationMinutes, priceAmount: $priceAmount, currency: $currency, maxParticipants: $maxParticipants, videoPlatform: $videoPlatform, videoUrl: $videoUrl, location: $location, locationMn: $locationMn, requiredEquipment: $requiredEquipment, requiredEquipmentMn: $requiredEquipmentMn, isActive: $isActive)';
 }
 
 
@@ -668,7 +668,7 @@ abstract mixin class $ServiceCopyWith<$Res>  {
   factory $ServiceCopyWith(Service value, $Res Function(Service) _then) = _$ServiceCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'coach_id') String coachId, String type, String title,@JsonKey(name: 'title_mn') String? titleMn, String? description,@JsonKey(name: 'description_mn') String? descriptionMn,@JsonKey(name: 'duration_minutes') int? durationMinutes,@JsonKey(name: 'price_amount') double? priceAmount, String? currency,@JsonKey(name: 'max_participants') int? maxParticipants,@JsonKey(name: 'video_platform') String? videoPlatform,@JsonKey(name: 'video_url') String? videoUrl,@JsonKey(name: 'is_active') bool isActive
+ String id,@JsonKey(name: 'coach_id') String coachId, String type, String title,@JsonKey(name: 'title_mn') String? titleMn, String? description,@JsonKey(name: 'description_mn') String? descriptionMn,@JsonKey(name: 'duration_minutes') int? durationMinutes,@JsonKey(name: 'price_amount') double? priceAmount, String? currency,@JsonKey(name: 'max_participants') int? maxParticipants,@JsonKey(name: 'video_platform') String? videoPlatform,@JsonKey(name: 'video_url') String? videoUrl, String? location,@JsonKey(name: 'location_mn') String? locationMn,@JsonKey(name: 'required_equipment') String? requiredEquipment,@JsonKey(name: 'required_equipment_mn') String? requiredEquipmentMn,@JsonKey(name: 'is_active') bool isActive
 });
 
 
@@ -685,7 +685,7 @@ class _$ServiceCopyWithImpl<$Res>
 
 /// Create a copy of Service
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? coachId = null,Object? type = null,Object? title = null,Object? titleMn = freezed,Object? description = freezed,Object? descriptionMn = freezed,Object? durationMinutes = freezed,Object? priceAmount = freezed,Object? currency = freezed,Object? maxParticipants = freezed,Object? videoPlatform = freezed,Object? videoUrl = freezed,Object? isActive = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? coachId = null,Object? type = null,Object? title = null,Object? titleMn = freezed,Object? description = freezed,Object? descriptionMn = freezed,Object? durationMinutes = freezed,Object? priceAmount = freezed,Object? currency = freezed,Object? maxParticipants = freezed,Object? videoPlatform = freezed,Object? videoUrl = freezed,Object? location = freezed,Object? locationMn = freezed,Object? requiredEquipment = freezed,Object? requiredEquipmentMn = freezed,Object? isActive = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,coachId: null == coachId ? _self.coachId : coachId // ignore: cast_nullable_to_non_nullable
@@ -700,6 +700,10 @@ as double?,currency: freezed == currency ? _self.currency : currency // ignore: 
 as String?,maxParticipants: freezed == maxParticipants ? _self.maxParticipants : maxParticipants // ignore: cast_nullable_to_non_nullable
 as int?,videoPlatform: freezed == videoPlatform ? _self.videoPlatform : videoPlatform // ignore: cast_nullable_to_non_nullable
 as String?,videoUrl: freezed == videoUrl ? _self.videoUrl : videoUrl // ignore: cast_nullable_to_non_nullable
+as String?,location: freezed == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
+as String?,locationMn: freezed == locationMn ? _self.locationMn : locationMn // ignore: cast_nullable_to_non_nullable
+as String?,requiredEquipment: freezed == requiredEquipment ? _self.requiredEquipment : requiredEquipment // ignore: cast_nullable_to_non_nullable
+as String?,requiredEquipmentMn: freezed == requiredEquipmentMn ? _self.requiredEquipmentMn : requiredEquipmentMn // ignore: cast_nullable_to_non_nullable
 as String?,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
@@ -786,10 +790,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'coach_id')  String coachId,  String type,  String title, @JsonKey(name: 'title_mn')  String? titleMn,  String? description, @JsonKey(name: 'description_mn')  String? descriptionMn, @JsonKey(name: 'duration_minutes')  int? durationMinutes, @JsonKey(name: 'price_amount')  double? priceAmount,  String? currency, @JsonKey(name: 'max_participants')  int? maxParticipants, @JsonKey(name: 'video_platform')  String? videoPlatform, @JsonKey(name: 'video_url')  String? videoUrl, @JsonKey(name: 'is_active')  bool isActive)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'coach_id')  String coachId,  String type,  String title, @JsonKey(name: 'title_mn')  String? titleMn,  String? description, @JsonKey(name: 'description_mn')  String? descriptionMn, @JsonKey(name: 'duration_minutes')  int? durationMinutes, @JsonKey(name: 'price_amount')  double? priceAmount,  String? currency, @JsonKey(name: 'max_participants')  int? maxParticipants, @JsonKey(name: 'video_platform')  String? videoPlatform, @JsonKey(name: 'video_url')  String? videoUrl,  String? location, @JsonKey(name: 'location_mn')  String? locationMn, @JsonKey(name: 'required_equipment')  String? requiredEquipment, @JsonKey(name: 'required_equipment_mn')  String? requiredEquipmentMn, @JsonKey(name: 'is_active')  bool isActive)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Service() when $default != null:
-return $default(_that.id,_that.coachId,_that.type,_that.title,_that.titleMn,_that.description,_that.descriptionMn,_that.durationMinutes,_that.priceAmount,_that.currency,_that.maxParticipants,_that.videoPlatform,_that.videoUrl,_that.isActive);case _:
+return $default(_that.id,_that.coachId,_that.type,_that.title,_that.titleMn,_that.description,_that.descriptionMn,_that.durationMinutes,_that.priceAmount,_that.currency,_that.maxParticipants,_that.videoPlatform,_that.videoUrl,_that.location,_that.locationMn,_that.requiredEquipment,_that.requiredEquipmentMn,_that.isActive);case _:
   return orElse();
 
 }
@@ -807,10 +811,10 @@ return $default(_that.id,_that.coachId,_that.type,_that.title,_that.titleMn,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'coach_id')  String coachId,  String type,  String title, @JsonKey(name: 'title_mn')  String? titleMn,  String? description, @JsonKey(name: 'description_mn')  String? descriptionMn, @JsonKey(name: 'duration_minutes')  int? durationMinutes, @JsonKey(name: 'price_amount')  double? priceAmount,  String? currency, @JsonKey(name: 'max_participants')  int? maxParticipants, @JsonKey(name: 'video_platform')  String? videoPlatform, @JsonKey(name: 'video_url')  String? videoUrl, @JsonKey(name: 'is_active')  bool isActive)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'coach_id')  String coachId,  String type,  String title, @JsonKey(name: 'title_mn')  String? titleMn,  String? description, @JsonKey(name: 'description_mn')  String? descriptionMn, @JsonKey(name: 'duration_minutes')  int? durationMinutes, @JsonKey(name: 'price_amount')  double? priceAmount,  String? currency, @JsonKey(name: 'max_participants')  int? maxParticipants, @JsonKey(name: 'video_platform')  String? videoPlatform, @JsonKey(name: 'video_url')  String? videoUrl,  String? location, @JsonKey(name: 'location_mn')  String? locationMn, @JsonKey(name: 'required_equipment')  String? requiredEquipment, @JsonKey(name: 'required_equipment_mn')  String? requiredEquipmentMn, @JsonKey(name: 'is_active')  bool isActive)  $default,) {final _that = this;
 switch (_that) {
 case _Service():
-return $default(_that.id,_that.coachId,_that.type,_that.title,_that.titleMn,_that.description,_that.descriptionMn,_that.durationMinutes,_that.priceAmount,_that.currency,_that.maxParticipants,_that.videoPlatform,_that.videoUrl,_that.isActive);case _:
+return $default(_that.id,_that.coachId,_that.type,_that.title,_that.titleMn,_that.description,_that.descriptionMn,_that.durationMinutes,_that.priceAmount,_that.currency,_that.maxParticipants,_that.videoPlatform,_that.videoUrl,_that.location,_that.locationMn,_that.requiredEquipment,_that.requiredEquipmentMn,_that.isActive);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -827,10 +831,10 @@ return $default(_that.id,_that.coachId,_that.type,_that.title,_that.titleMn,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'coach_id')  String coachId,  String type,  String title, @JsonKey(name: 'title_mn')  String? titleMn,  String? description, @JsonKey(name: 'description_mn')  String? descriptionMn, @JsonKey(name: 'duration_minutes')  int? durationMinutes, @JsonKey(name: 'price_amount')  double? priceAmount,  String? currency, @JsonKey(name: 'max_participants')  int? maxParticipants, @JsonKey(name: 'video_platform')  String? videoPlatform, @JsonKey(name: 'video_url')  String? videoUrl, @JsonKey(name: 'is_active')  bool isActive)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'coach_id')  String coachId,  String type,  String title, @JsonKey(name: 'title_mn')  String? titleMn,  String? description, @JsonKey(name: 'description_mn')  String? descriptionMn, @JsonKey(name: 'duration_minutes')  int? durationMinutes, @JsonKey(name: 'price_amount')  double? priceAmount,  String? currency, @JsonKey(name: 'max_participants')  int? maxParticipants, @JsonKey(name: 'video_platform')  String? videoPlatform, @JsonKey(name: 'video_url')  String? videoUrl,  String? location, @JsonKey(name: 'location_mn')  String? locationMn, @JsonKey(name: 'required_equipment')  String? requiredEquipment, @JsonKey(name: 'required_equipment_mn')  String? requiredEquipmentMn, @JsonKey(name: 'is_active')  bool isActive)?  $default,) {final _that = this;
 switch (_that) {
 case _Service() when $default != null:
-return $default(_that.id,_that.coachId,_that.type,_that.title,_that.titleMn,_that.description,_that.descriptionMn,_that.durationMinutes,_that.priceAmount,_that.currency,_that.maxParticipants,_that.videoPlatform,_that.videoUrl,_that.isActive);case _:
+return $default(_that.id,_that.coachId,_that.type,_that.title,_that.titleMn,_that.description,_that.descriptionMn,_that.durationMinutes,_that.priceAmount,_that.currency,_that.maxParticipants,_that.videoPlatform,_that.videoUrl,_that.location,_that.locationMn,_that.requiredEquipment,_that.requiredEquipmentMn,_that.isActive);case _:
   return null;
 
 }
@@ -842,7 +846,7 @@ return $default(_that.id,_that.coachId,_that.type,_that.title,_that.titleMn,_tha
 @JsonSerializable()
 
 class _Service implements Service {
-  const _Service({required this.id, @JsonKey(name: 'coach_id') required this.coachId, required this.type, required this.title, @JsonKey(name: 'title_mn') this.titleMn, this.description, @JsonKey(name: 'description_mn') this.descriptionMn, @JsonKey(name: 'duration_minutes') this.durationMinutes, @JsonKey(name: 'price_amount') this.priceAmount, this.currency, @JsonKey(name: 'max_participants') this.maxParticipants, @JsonKey(name: 'video_platform') this.videoPlatform, @JsonKey(name: 'video_url') this.videoUrl, @JsonKey(name: 'is_active') this.isActive = true});
+  const _Service({required this.id, @JsonKey(name: 'coach_id') required this.coachId, required this.type, required this.title, @JsonKey(name: 'title_mn') this.titleMn, this.description, @JsonKey(name: 'description_mn') this.descriptionMn, @JsonKey(name: 'duration_minutes') this.durationMinutes, @JsonKey(name: 'price_amount') this.priceAmount, this.currency, @JsonKey(name: 'max_participants') this.maxParticipants, @JsonKey(name: 'video_platform') this.videoPlatform, @JsonKey(name: 'video_url') this.videoUrl, this.location, @JsonKey(name: 'location_mn') this.locationMn, @JsonKey(name: 'required_equipment') this.requiredEquipment, @JsonKey(name: 'required_equipment_mn') this.requiredEquipmentMn, @JsonKey(name: 'is_active') this.isActive = true});
   factory _Service.fromJson(Map<String, dynamic> json) => _$ServiceFromJson(json);
 
 @override final  String id;
@@ -858,6 +862,10 @@ class _Service implements Service {
 @override@JsonKey(name: 'max_participants') final  int? maxParticipants;
 @override@JsonKey(name: 'video_platform') final  String? videoPlatform;
 @override@JsonKey(name: 'video_url') final  String? videoUrl;
+@override final  String? location;
+@override@JsonKey(name: 'location_mn') final  String? locationMn;
+@override@JsonKey(name: 'required_equipment') final  String? requiredEquipment;
+@override@JsonKey(name: 'required_equipment_mn') final  String? requiredEquipmentMn;
 @override@JsonKey(name: 'is_active') final  bool isActive;
 
 /// Create a copy of Service
@@ -873,16 +881,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Service&&(identical(other.id, id) || other.id == id)&&(identical(other.coachId, coachId) || other.coachId == coachId)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.titleMn, titleMn) || other.titleMn == titleMn)&&(identical(other.description, description) || other.description == description)&&(identical(other.descriptionMn, descriptionMn) || other.descriptionMn == descriptionMn)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.maxParticipants, maxParticipants) || other.maxParticipants == maxParticipants)&&(identical(other.videoPlatform, videoPlatform) || other.videoPlatform == videoPlatform)&&(identical(other.videoUrl, videoUrl) || other.videoUrl == videoUrl)&&(identical(other.isActive, isActive) || other.isActive == isActive));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Service&&(identical(other.id, id) || other.id == id)&&(identical(other.coachId, coachId) || other.coachId == coachId)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.titleMn, titleMn) || other.titleMn == titleMn)&&(identical(other.description, description) || other.description == description)&&(identical(other.descriptionMn, descriptionMn) || other.descriptionMn == descriptionMn)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.maxParticipants, maxParticipants) || other.maxParticipants == maxParticipants)&&(identical(other.videoPlatform, videoPlatform) || other.videoPlatform == videoPlatform)&&(identical(other.videoUrl, videoUrl) || other.videoUrl == videoUrl)&&(identical(other.location, location) || other.location == location)&&(identical(other.locationMn, locationMn) || other.locationMn == locationMn)&&(identical(other.requiredEquipment, requiredEquipment) || other.requiredEquipment == requiredEquipment)&&(identical(other.requiredEquipmentMn, requiredEquipmentMn) || other.requiredEquipmentMn == requiredEquipmentMn)&&(identical(other.isActive, isActive) || other.isActive == isActive));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,coachId,type,title,titleMn,description,descriptionMn,durationMinutes,priceAmount,currency,maxParticipants,videoPlatform,videoUrl,isActive);
+int get hashCode => Object.hash(runtimeType,id,coachId,type,title,titleMn,description,descriptionMn,durationMinutes,priceAmount,currency,maxParticipants,videoPlatform,videoUrl,location,locationMn,requiredEquipment,requiredEquipmentMn,isActive);
 
 @override
 String toString() {
-  return 'Service(id: $id, coachId: $coachId, type: $type, title: $title, titleMn: $titleMn, description: $description, descriptionMn: $descriptionMn, durationMinutes: $durationMinutes, priceAmount: $priceAmount, currency: $currency, maxParticipants: $maxParticipants, videoPlatform: $videoPlatform, videoUrl: $videoUrl, isActive: $isActive)';
+  return 'Service(id: $id, coachId: $coachId, type: $type, title: $title, titleMn: $titleMn, description: $description, descriptionMn: $descriptionMn, durationMinutes: $durationMinutes, priceAmount: $priceAmount, currency: $currency, maxParticipants: $maxParticipants, videoPlatform: $videoPlatform, videoUrl: $videoUrl, location: $location, locationMn: $locationMn, requiredEquipment: $requiredEquipment, requiredEquipmentMn: $requiredEquipmentMn, isActive: $isActive)';
 }
 
 
@@ -893,7 +901,7 @@ abstract mixin class _$ServiceCopyWith<$Res> implements $ServiceCopyWith<$Res> {
   factory _$ServiceCopyWith(_Service value, $Res Function(_Service) _then) = __$ServiceCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'coach_id') String coachId, String type, String title,@JsonKey(name: 'title_mn') String? titleMn, String? description,@JsonKey(name: 'description_mn') String? descriptionMn,@JsonKey(name: 'duration_minutes') int? durationMinutes,@JsonKey(name: 'price_amount') double? priceAmount, String? currency,@JsonKey(name: 'max_participants') int? maxParticipants,@JsonKey(name: 'video_platform') String? videoPlatform,@JsonKey(name: 'video_url') String? videoUrl,@JsonKey(name: 'is_active') bool isActive
+ String id,@JsonKey(name: 'coach_id') String coachId, String type, String title,@JsonKey(name: 'title_mn') String? titleMn, String? description,@JsonKey(name: 'description_mn') String? descriptionMn,@JsonKey(name: 'duration_minutes') int? durationMinutes,@JsonKey(name: 'price_amount') double? priceAmount, String? currency,@JsonKey(name: 'max_participants') int? maxParticipants,@JsonKey(name: 'video_platform') String? videoPlatform,@JsonKey(name: 'video_url') String? videoUrl, String? location,@JsonKey(name: 'location_mn') String? locationMn,@JsonKey(name: 'required_equipment') String? requiredEquipment,@JsonKey(name: 'required_equipment_mn') String? requiredEquipmentMn,@JsonKey(name: 'is_active') bool isActive
 });
 
 
@@ -910,7 +918,7 @@ class __$ServiceCopyWithImpl<$Res>
 
 /// Create a copy of Service
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? coachId = null,Object? type = null,Object? title = null,Object? titleMn = freezed,Object? description = freezed,Object? descriptionMn = freezed,Object? durationMinutes = freezed,Object? priceAmount = freezed,Object? currency = freezed,Object? maxParticipants = freezed,Object? videoPlatform = freezed,Object? videoUrl = freezed,Object? isActive = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? coachId = null,Object? type = null,Object? title = null,Object? titleMn = freezed,Object? description = freezed,Object? descriptionMn = freezed,Object? durationMinutes = freezed,Object? priceAmount = freezed,Object? currency = freezed,Object? maxParticipants = freezed,Object? videoPlatform = freezed,Object? videoUrl = freezed,Object? location = freezed,Object? locationMn = freezed,Object? requiredEquipment = freezed,Object? requiredEquipmentMn = freezed,Object? isActive = null,}) {
   return _then(_Service(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,coachId: null == coachId ? _self.coachId : coachId // ignore: cast_nullable_to_non_nullable
@@ -925,6 +933,10 @@ as double?,currency: freezed == currency ? _self.currency : currency // ignore: 
 as String?,maxParticipants: freezed == maxParticipants ? _self.maxParticipants : maxParticipants // ignore: cast_nullable_to_non_nullable
 as int?,videoPlatform: freezed == videoPlatform ? _self.videoPlatform : videoPlatform // ignore: cast_nullable_to_non_nullable
 as String?,videoUrl: freezed == videoUrl ? _self.videoUrl : videoUrl // ignore: cast_nullable_to_non_nullable
+as String?,location: freezed == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
+as String?,locationMn: freezed == locationMn ? _self.locationMn : locationMn // ignore: cast_nullable_to_non_nullable
+as String?,requiredEquipment: freezed == requiredEquipment ? _self.requiredEquipment : requiredEquipment // ignore: cast_nullable_to_non_nullable
+as String?,requiredEquipmentMn: freezed == requiredEquipmentMn ? _self.requiredEquipmentMn : requiredEquipmentMn // ignore: cast_nullable_to_non_nullable
 as String?,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
 as bool,
   ));

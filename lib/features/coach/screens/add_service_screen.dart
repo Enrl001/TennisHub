@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -21,10 +22,12 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
   final _descCtrl = TextEditingController();
   final _durationCtrl = TextEditingController(text: '60');
   final _priceCtrl = TextEditingController();
-  final _currencyCtrl = TextEditingController(text: 'USD');
+  final _currencyCtrl = TextEditingController(text: AppConstants.defaultCurrency);
   final _maxCtrl = TextEditingController(text: '1');
   final _videoPlatformCtrl = TextEditingController();
   final _videoUrlCtrl = TextEditingController();
+  final _locationCtrl = TextEditingController();
+  final _equipmentCtrl = TextEditingController();
   bool _loading = false;
 
   @override
@@ -37,6 +40,8 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
     _maxCtrl.dispose();
     _videoPlatformCtrl.dispose();
     _videoUrlCtrl.dispose();
+    _locationCtrl.dispose();
+    _equipmentCtrl.dispose();
     super.dispose();
   }
 
@@ -53,6 +58,8 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
       final isMn = locale == 'mn';
       final title = _titleCtrl.text.trim();
       final description = _descCtrl.text.trim();
+      final location = _locationCtrl.text.trim();
+      final equipment = _equipmentCtrl.text.trim();
 
       await ref.read(coachProfileProvider.notifier).addService({
         'coach_id': coachId,
@@ -65,6 +72,10 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
         'price_amount': double.tryParse(_priceCtrl.text) ?? 0,
         'currency': _currencyCtrl.text.trim(),
         'max_participants': int.tryParse(_maxCtrl.text) ?? 1,
+        if (location.isNotEmpty && isMn) 'location_mn': location,
+        if (location.isNotEmpty && !isMn) 'location': location,
+        if (equipment.isNotEmpty && isMn) 'required_equipment_mn': equipment,
+        if (equipment.isNotEmpty && !isMn) 'required_equipment': equipment,
         if (_type == 'virtual_session') ...<String, dynamic>{
           'video_platform': _videoPlatformCtrl.text.trim(),
           'video_url': _videoUrlCtrl.text.trim(),
@@ -112,6 +123,8 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
               maxCtrl: _maxCtrl,
               videoPlatformCtrl: _videoPlatformCtrl,
               videoUrlCtrl: _videoUrlCtrl,
+              locationCtrl: _locationCtrl,
+              equipmentCtrl: _equipmentCtrl,
               onSubmit: _loading ? null : _save,
               loading: _loading,
             ),

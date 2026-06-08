@@ -8,6 +8,10 @@ import '../../customer/providers/filter_provider.dart';
 
 part 'coach_provider.g.dart';
 
+class DuplicateCoachSlotException implements Exception {
+  const DuplicateCoachSlotException();
+}
+
 /// Ensures int IDs from the DB are always treated as Strings before
 /// passing to the generated fromJson code.
 Map<String, dynamic> _fixCoachJson(Map<String, dynamic> json) {
@@ -153,6 +157,24 @@ class CoachProfileNotifier extends _$CoachProfileNotifier {
 
   Future<void> addTimeSlots(List<Map<String, dynamic>> slots) async {
     final client = ref.read(supabaseClientProvider);
+    for (final slot in slots) {
+      final coachId = slot['coach_id']?.toString();
+      final serviceId = slot['service_id']?.toString();
+      final startsAt = slot['starts_at']?.toString();
+      if (coachId == null || serviceId == null || startsAt == null) continue;
+
+      final existing = await client
+          .from('time_slots')
+          .select('id')
+          .eq('coach_id', coachId)
+          .eq('service_id', serviceId)
+          .eq('starts_at', startsAt)
+          .eq('is_cancelled', false)
+          .maybeSingle();
+      if (existing != null) {
+        throw const DuplicateCoachSlotException();
+      }
+    }
     await client.from('time_slots').insert(slots);
     if (!ref.mounted) return;
     final serviceIds = slots

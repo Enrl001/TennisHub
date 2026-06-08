@@ -56,6 +56,10 @@ abstract class Service with _$Service {
     @JsonKey(name: 'max_participants') int? maxParticipants,
     @JsonKey(name: 'video_platform') String? videoPlatform,
     @JsonKey(name: 'video_url') String? videoUrl,
+    String? location,
+    @JsonKey(name: 'location_mn') String? locationMn,
+    @JsonKey(name: 'required_equipment') String? requiredEquipment,
+    @JsonKey(name: 'required_equipment_mn') String? requiredEquipmentMn,
     @JsonKey(name: 'is_active') @Default(true) bool isActive,
   }) = _Service;
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -34,46 +35,40 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: HubStyle.pageBg,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 88,
+              height: 88,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                color: HubStyle.accentLime,
+                borderRadius: BorderRadius.circular(HubStyle.radiusSm),
               ),
-              child: const Icon(Icons.sports_tennis, size: 48, color: AppColors.primary),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'MyClub',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5,
+              child: const Icon(
+                Icons.sports_tennis,
+                size: 48,
+                color: HubStyle.hubOlive,
               ),
             ),
+            const SizedBox(height: 24),
+            const Text('MY CLUB', style: HubStyle.brandTitle),
             const SizedBox(height: 8),
             Text(
-              'Find. Book. Play.',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.75),
-                fontSize: 15,
-              ),
+              l10n.splashTagline,
+              style: HubStyle.bodyMuted.copyWith(fontSize: 15),
             ),
-            const SizedBox(height: 60),
+            const SizedBox(height: 56),
             const SizedBox(
               width: 24,
               height: 24,
               child: CircularProgressIndicator(
                 strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
+                color: HubStyle.hubOlive,
               ),
             ),
           ],

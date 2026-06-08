@@ -80,6 +80,10 @@ _Service _$ServiceFromJson(Map<String, dynamic> json) => _Service(
   maxParticipants: (json['max_participants'] as num?)?.toInt(),
   videoPlatform: json['video_platform'] as String?,
   videoUrl: json['video_url'] as String?,
+  location: json['location'] as String?,
+  locationMn: json['location_mn'] as String?,
+  requiredEquipment: json['required_equipment'] as String?,
+  requiredEquipmentMn: json['required_equipment_mn'] as String?,
   isActive: json['is_active'] as bool? ?? true,
 );
 
@@ -97,6 +101,10 @@ Map<String, dynamic> _$ServiceToJson(_Service instance) => <String, dynamic>{
   'max_participants': instance.maxParticipants,
   'video_platform': instance.videoPlatform,
   'video_url': instance.videoUrl,
+  'location': instance.location,
+  'location_mn': instance.locationMn,
+  'required_equipment': instance.requiredEquipment,
+  'required_equipment_mn': instance.requiredEquipmentMn,
   'is_active': instance.isActive,
 };
 

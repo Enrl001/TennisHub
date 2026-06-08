@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/theme/app_theme.dart';
 import '../../features/notification/providers/notification_provider.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -20,8 +21,13 @@ class CustomerShell extends ConsumerWidget {
     if (location.startsWith('/settings')) currentIndex = 3;
 
     return Scaffold(
+      backgroundColor: HubStyle.pageBg,
       body: child,
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: DecoratedBox(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: HubStyle.cardBorder)),
+        ),
+        child: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (i) {
           switch (i) {
@@ -70,6 +76,7 @@ class CustomerShell extends ConsumerWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
@@ -92,8 +99,13 @@ class CoachShell extends ConsumerWidget {
     if (location.startsWith('/coach-settings')) currentIndex = 4;
 
     return Scaffold(
+      backgroundColor: HubStyle.pageBg,
       body: child,
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: DecoratedBox(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: HubStyle.cardBorder)),
+        ),
+        child: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (i) {
           switch (i) {
@@ -149,6 +161,7 @@ class CoachShell extends ConsumerWidget {
             label: l10n.profile,
           ),
         ],
+      ),
       ),
     );
   }

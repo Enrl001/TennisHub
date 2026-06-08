@@ -202,19 +202,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get payWithSmartpay => 'Pay with Smartpay';
 
   @override
-  String get paymentInstructions => 'You will be redirected to Smartpay to complete your payment';
+  String get paymentInstructions =>
+      'You will be redirected to Smartpay to complete your payment';
 
   @override
-  String get cardNumber => 'Card Number';
-
-  @override
-  String get expiryDate => 'Expiry Date';
-
-  @override
-  String get cvv => 'CVV';
-
-  @override
-  String get cardholderName => 'Cardholder Name';
+  String get waitingPayment => 'Waiting for payment...';
 
   @override
   String get payNow => 'Pay Now';
@@ -376,6 +368,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get slotCreated => 'Time slot created successfully';
 
   @override
+  String get duplicateSlot =>
+      'A slot already exists at this time for this service.';
+
+  @override
+  String get sessionDetails => 'Session Details';
+
+  @override
+  String get requiredEquipment => 'Required Equipment';
+
+  @override
+  String get leaveReview => 'Leave a Review';
+
+  @override
+  String get yourReview => 'Your Review';
+
+  @override
+  String get reviewSubmitted => 'Thank you for your review!';
+
+  @override
+  String get reviewAfterSession =>
+      'You can leave a review after the session ends.';
+
+  @override
+  String get participants => 'Participants';
+
+  @override
+  String get noEquipmentListed => 'No equipment listed';
+
+  @override
+  String get noLocationListed => 'Location not specified';
+
+  @override
+  String get writeReviewHint => 'Share your experience...';
+
+  @override
+  String get submitReview => 'Submit Review';
+
+  @override
+  String get sessionLocation => 'Location';
+
+  @override
+  String get serviceLocation => 'Session location';
+
+  @override
+  String get equipmentHint => 'Racket, shoes, water...';
+
+  @override
   String get cancel => 'Cancel';
 
   @override
@@ -445,4 +484,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordTooShort => 'Password must be at least 6 characters';
+
+  @override
+  String get welcomeBack => 'Welcome back';
+
+  @override
+  String get splashTagline => 'Find. Book. Play.';
+
+  @override
+  String get roleSelectSubtitle => 'Choose how you will use MyClub';
+
+  @override
+  String get createAccountSubtitle => 'Create your MyClub account';
+
+  @override
+  String get enterYourName => 'Please enter your name';
+
+  @override
+  String get checkEmailConfirm =>
+      'Check your email and click the confirmation link, then sign in.';
+
+  @override
+  String get emailAlreadyRegistered =>
+      'This email is already registered. Try signing in instead.';
+
+  @override
+  String get weeklyOverview => 'WEEKLY OVERVIEW';
+
+  @override
+  String get weekView => 'Week';
+
+  @override
+  String get monthView => 'Month';
+
+  @override
+  String get openSlot => 'Open Slot';
+
+  @override
+  String get statusOpen => 'OPEN';
+
+  @override
+  String get playersBooked => 'booked';
+
+  @override
+  String get nothingScheduled => 'Nothing scheduled';
+
+  @override
+  String get coach => 'Coach';
+
+  @override
+  String get customer => 'Customer';
+
+  @override
+  String get session => 'Session';
+
+  @override
+  String startsInMinutes(int minutes) {
+    return 'Starts in $minutes min';
+  }
+
+  @override
+  String get noBioProvided => 'No bio provided.';
+
+  @override
+  String reviewCount(int count) {
+    return '$count reviews';
+  }
 }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import '../../features/booking/booking_flow.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/extensions.dart';
+import '../../core/utils/l10n_helpers.dart';
+import '../../core/utils/locale_format.dart';
+import '../../l10n/app_localizations.dart';
 import '../extensions/local_ext.dart';
 import '../models/models.dart';
 import 'service_chip.dart';
@@ -11,7 +14,7 @@ class BookingCard extends StatelessWidget {
     super.key,
     required this.booking,
     this.isCoach = false,
-    this.locale = 'en',
+    this.locale = 'mn',
     this.onTap,
   });
 
@@ -24,13 +27,13 @@ class BookingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final slot = booking.slot;
     final service = booking.service ?? booking.slot?.service;
+    final l10n = AppLocalizations.of(context);
+    final fmt = LocaleFormat(locale);
     final color = AppColors.statusColor(booking.status);
-    final dateFormat = DateFormat('EEE, MMM d, yyyy');
-    final timeFormat = DateFormat('h:mm a');
 
     final title = service != null
         ? service.localTitle(locale)
-        : (locale == 'mn' ? 'Сесс' : 'Session');
+        : l10n.session;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -40,7 +43,7 @@ class BookingCard extends StatelessWidget {
         border: Border.all(color: HubStyle.cardBorder),
       ),
       child: InkWell(
-        onTap: onTap,
+        onTap: onTap ?? () => openSession(context, booking.id),
         borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -62,7 +65,7 @@ class BookingCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      booking.status.capitalize(),
+                      l10n.bookingStatus(booking.status),
                       style: TextStyle(
                         color: color,
                         fontSize: 12,
@@ -90,7 +93,7 @@ class BookingCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      booking.customer!.fullName ?? 'Customer',
+                      booking.customer!.fullName ?? l10n.customer,
                       style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                   ],
@@ -107,7 +110,7 @@ class BookingCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      booking.coach!.profile!.fullName ?? 'Coach',
+                      booking.coach!.profile!.fullName ?? l10n.coach,
                       style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                   ],
@@ -124,7 +127,7 @@ class BookingCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      dateFormat.format(slot.startsAt),
+                      fmt.displayDate(slot.startsAt),
                       style: const TextStyle(fontSize: 13, color: Colors.grey),
                     ),
                     const SizedBox(width: 12),
@@ -135,7 +138,7 @@ class BookingCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      timeFormat.format(slot.startsAt),
+                      fmt.time(slot.startsAt),
                       style: const TextStyle(fontSize: 13, color: Colors.grey),
                     ),
                   ],

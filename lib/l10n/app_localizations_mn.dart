@@ -74,7 +74,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get onboardingDesc2 =>
-      'Хувийн эсвэл бүлгийн хичээлийг хялбархан товлоорой';
+      'Ганцаарчилсан эсвэл бүлгийн хичээлийг хялбархан товлоорой';
 
   @override
   String get onboardingTitle3 => 'Хамгийн сайн тоглоорой';
@@ -101,7 +101,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get filterAll => 'Бүгд';
 
   @override
-  String get filterPrivate => 'Хувийн';
+  String get filterPrivate => 'Ганцаарчилсан';
 
   @override
   String get filterGroup => 'Бүлгийн';
@@ -120,7 +120,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String slotsLeft(int count) {
-    return '$count байр үлдсэн';
+    return '$count зай үлдсэн';
   }
 
   @override
@@ -184,7 +184,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String availableSpots(int count) {
-    return '$count байр боломжтой';
+    return '$count зай боломжтой';
   }
 
   @override
@@ -203,19 +203,11 @@ class AppLocalizationsMn extends AppLocalizations {
   String get payWithSmartpay => 'Smartpay-ээр төлөх';
 
   @override
-  String get paymentInstructions => 'Та Smartpay руу хандан төлбөрөө гүйцэтгэнэ';
+  String get paymentInstructions =>
+      'Та Smartpay руу шилжиж төлбөрөө гүйцэтгэнэ';
 
   @override
-  String get cardNumber => 'Картын дугаар';
-
-  @override
-  String get expiryDate => 'Дуусах хугацаа';
-
-  @override
-  String get cvv => 'CVV';
-
-  @override
-  String get cardholderName => 'Карт эзэмшигчийн нэр';
+  String get waitingPayment => 'Төлбөр хүлээж байна...';
 
   @override
   String get payNow => 'Одоо төлөх';
@@ -254,7 +246,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get noNotifications => 'Мэдэгдэл байхгүй байна';
 
   @override
-  String get markAllRead => 'Бүгдийг уншсан гэж тэмдэглэх';
+  String get markAllRead => 'Бүгдийг унших';
 
   @override
   String get profile => 'Профайл';
@@ -320,7 +312,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get serviceType => 'Үйлчилгээний төрөл';
 
   @override
-  String get privateLesson => 'Хувийн хичээл';
+  String get privateLesson => 'Ганцаарчилсан хичээл';
 
   @override
   String get groupLesson => 'Бүлгийн хичээл';
@@ -374,7 +366,53 @@ class AppLocalizationsMn extends AppLocalizations {
   String get createSlot => 'Цаг үүсгэх';
 
   @override
-  String get slotCreated => 'Цагийн алхам амжилттай үүслэлаа';
+  String get slotCreated => 'Цагийн алхам амжилттай үүслэлээ';
+
+  @override
+  String get duplicateSlot =>
+      'Энэ үйлчилгээнд ижил цаг аль хэдийн бүртгэгдсэн байна.';
+
+  @override
+  String get sessionDetails => 'Хичээлийн дэлгэрэнгүй';
+
+  @override
+  String get requiredEquipment => 'Шаардлагатай хэрэгсэл';
+
+  @override
+  String get leaveReview => 'Үнэлгээ үлдээх';
+
+  @override
+  String get yourReview => 'Таны үнэлгээ';
+
+  @override
+  String get reviewSubmitted => 'Үнэлгээ өгсөнд баярлалаа!';
+
+  @override
+  String get reviewAfterSession => 'Хичээл дууссаны дараа үнэлгээ үлдэж болно.';
+
+  @override
+  String get participants => 'Оролцогчид';
+
+  @override
+  String get noEquipmentListed => 'Хэрэгсэл заагаагүй';
+
+  @override
+  String get noLocationListed => 'Байршил заагаагүй';
+
+  @override
+  String get writeReviewHint => 'Туршлагаа хуваалцана уу...';
+
+  @override
+  String get submitReview => 'Үнэлгээ илгээх';
+
+  @override
+  String get sessionLocation => 'Байршил';
+
+  @override
+  String get serviceLocation => 'Хичээлийн байршил';
+
+  @override
+  String get equipmentHint => 'Ракет, пүүз, ус...';
 
   @override
   String get cancel => 'Цуцлах';
@@ -446,4 +484,70 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get passwordTooShort => 'Нууц үг дор хаяж 6 тэмдэгт байх ёстой';
+
+  @override
+  String get welcomeBack => 'Эргэн тавтай морил';
+
+  @override
+  String get splashTagline => 'Олох. Захиалах. Тоглох.';
+
+  @override
+  String get roleSelectSubtitle => 'MyClub-ийг хэрхэн ашиглах вэ';
+
+  @override
+  String get createAccountSubtitle => 'MyClub бүртгэл үүсгэх';
+
+  @override
+  String get enterYourName => 'Нэрээ оруулна уу';
+
+  @override
+  String get checkEmailConfirm =>
+      'Имэйлээ шалгаад баталгаажуулах холбоос дээр дарна уу, дараа нь нэвтэрнэ үү.';
+
+  @override
+  String get emailAlreadyRegistered =>
+      'Энэ имэйл аль хэдийн бүртгэгдсэн байна. Нэвтрэхийг оролдоно уу.';
+
+  @override
+  String get weeklyOverview => 'ДОЛОО ХОНОГИЙН ТОЙМ';
+
+  @override
+  String get weekView => '7 хоног';
+
+  @override
+  String get monthView => 'Сар';
+
+  @override
+  String get openSlot => 'Нээлттэй цаг';
+
+  @override
+  String get statusOpen => 'НЭЭЛТТЭЙ';
+
+  @override
+  String get playersBooked => 'захиалсан';
+
+  @override
+  String get nothingScheduled => 'Хуваарь байхгүй';
+
+  @override
+  String get coach => 'Дасгалжуулагч';
+
+  @override
+  String get customer => 'Хэрэглэгч';
+
+  @override
+  String get session => 'Хичээл';
+
+  @override
+  String startsInMinutes(int minutes) {
+    return '$minutes минутын дараа эхэлнэ';
+  }
+
+  @override
+  String get noBioProvided => 'Намтар оруулаагүй байна.';
+
+  @override
+  String reviewCount(int count) {
+    return '$count үнэлгээ';
+  }
 }

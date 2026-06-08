@@ -36,6 +36,15 @@ class MyClubApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       locale: Locale(localeCode),
+      localeListResolutionCallback: (locales, supported) {
+        if (locales != null) {
+          for (final locale in locales) {
+            if (locale.languageCode == 'mn') return const Locale('mn');
+            if (locale.languageCode == 'en') return const Locale('en');
+          }
+        }
+        return Locale(AppConstants.defaultLocale);
+      },
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -43,8 +52,8 @@ class MyClubApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [
-        Locale('en'),
         Locale('mn'),
+        Locale('en'),
       ],
       routerConfig: router,
     );

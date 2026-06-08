@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../booking_flow.dart';
+import '../../coach/providers/coach_provider.dart';
 import '../../../shared/models/models.dart';
 import '../../../shared/providers/supabase_providers.dart';
 
@@ -57,6 +58,14 @@ Map<String, dynamic> _fixBookingJson(Map<String, dynamic> json) {
     m['service'] = _fixServiceJson(
       Map<String, dynamic>.from(m['service'] as Map),
     );
+  }
+  if (m['coach'] is Map) {
+    final coach = Map<String, dynamic>.from(m['coach'] as Map);
+    if (coach['id'] != null) coach['id'] = coerceEntityId(coach['id']);
+    if (coach['profile_id'] != null) {
+      coach['profile_id'] = coerceEntityId(coach['profile_id']);
+    }
+    m['coach'] = coach;
   }
   return m;
 }
@@ -175,6 +184,10 @@ Future<List<Booking>> coachBookings(Ref ref) async {
       .toList();
 }
 
+const _bookingDetailSelect =
+    '*, slot:time_slots(*, service:services(*)), service:services(*), '
+    'customer:profiles(*), coach:coaches(*, profile:profiles(*))';
+
 final bookingDetailProvider = FutureProvider.family<Booking?, String>((
   ref,
   bookingId,
@@ -182,13 +195,57 @@ final bookingDetailProvider = FutureProvider.family<Booking?, String>((
   final client = ref.watch(supabaseClientProvider);
   final data = await client
       .from('bookings')
-      .select(
-        '*, slot:time_slots(*, service:services(*)), service:services(*), customer:profiles(*)',
-      )
+      .select(_bookingDetailSelect)
       .eq('id', bookingId)
       .maybeSingle();
   if (data == null) return null;
   return Booking.fromJson(_fixBookingJson(Map<String, dynamic>.from(data)));
+});
+
+final slotSessionProvider = FutureProvider.family<TimeSlot?, String>((
+  ref,
+  slotId,
+) async {
+  final client = ref.watch(supabaseClientProvider);
+  final data = await client
+      .from('time_slots')
+      .select('*, service:services(*)')
+      .eq('id', slotId)
+      .maybeSingle();
+  if (data == null) return null;
+  return TimeSlot.fromJson(
+    _fixTimeSlotJson(Map<String, dynamic>.from(data)),
+  );
+});
+
+final slotBookingsProvider = FutureProvider.family<List<Booking>, String>((
+  ref,
+  slotId,
+) async {
+  final client = ref.watch(supabaseClientProvider);
+  final data = await client
+      .from('bookings')
+      .select(_bookingDetailSelect)
+      .eq('slot_id', slotId)
+      .inFilter('status', ['pending', 'confirmed', 'completed'])
+      .order('created_at');
+  return (data as List)
+      .map((e) => Booking.fromJson(_fixBookingJson(e as Map<String, dynamic>)))
+      .toList();
+});
+
+final bookingReviewProvider = FutureProvider.family<Review?, String>((
+  ref,
+  bookingId,
+) async {
+  final client = ref.watch(supabaseClientProvider);
+  final data = await client
+      .from('reviews')
+      .select('*, customer:profiles(*)')
+      .eq('booking_id', bookingId)
+      .maybeSingle();
+  if (data == null) return null;
+  return Review.fromJson(Map<String, dynamic>.from(data));
 });
 
 @riverpod
@@ -339,7 +396,7 @@ class BookingNotifier extends _$BookingNotifier {
         'service_id': dbServiceId,
         'coach_id': dbCoachId,
         'customer_id': user.id,
-        'status': service.type == 'group_lesson' ? 'confirmed' : 'pending',
+        'status': amount <= 0 ? 'confirmed' : 'pending',
         'amount_paid': amount,
         'currency': currency,
         'slot': slotRow,
@@ -393,6 +450,30 @@ class BookingNotifier extends _$BookingNotifier {
     ref.invalidate(coachBookingsProvider);
     ref.invalidate(coachCalendarBookingsProvider);
     ref.invalidate(bookingDetailProvider(bookingId));
+  }
+
+  Future<void> submitReview({
+    required String bookingId,
+    required String coachId,
+    required int rating,
+    String? comment,
+  }) async {
+    final client = ref.read(supabaseClientProvider);
+    final user = client.auth.currentUser;
+    if (user == null) throw Exception('Not authenticated');
+
+    await client.from('reviews').insert({
+      'booking_id': bookingId,
+      'coach_id': coachId,
+      'customer_id': user.id,
+      'rating': rating,
+      'comment': comment?.trim().isEmpty ?? true ? null : comment?.trim(),
+    });
+
+    if (!ref.mounted) return;
+    ref.invalidate(bookingReviewProvider(bookingId));
+    ref.invalidate(coachReviewsProvider(coachId));
+    ref.invalidate(coachDetailProvider(coachId));
   }
 }
 

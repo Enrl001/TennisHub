@@ -47,7 +47,7 @@ final class PaymentNotifierProvider
   }
 }
 
-String _$paymentNotifierHash() => r'a3968968e24d6aaae059363e26ee1ab42a3acfef';
+String _$paymentNotifierHash() => r'6266d9eaad74cb8443a847cfb43793d699c4f830';
 
 /// Holds the Smartpay invoice URL returned after invoice creation.
 /// `null` = not yet created / loading cleared.

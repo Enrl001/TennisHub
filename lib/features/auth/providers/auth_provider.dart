@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../shared/models/models.dart';
 import '../../../shared/providers/supabase_providers.dart';
 
@@ -130,7 +131,20 @@ bool isAuthenticated(Ref ref) =>
 @riverpod
 class LocaleNotifier extends _$LocaleNotifier {
   @override
-  String build() => 'en';
+  String build() {
+    final profile = ref.watch(currentProfileProvider);
+    final code = profile?.locale;
+    if (code == 'en' || code == 'mn') return code!;
+    return AppConstants.defaultLocale;
+  }
 
-  void setLocale(String locale) => state = locale;
+  Future<void> setLocale(String locale) async {
+    if (locale != 'en' && locale != 'mn') return;
+    final profile = ref.read(currentProfileProvider);
+    if (profile != null) {
+      await ref.read(authProvider.notifier).updateProfile({'locale': locale});
+      return;
+    }
+    state = locale;
+  }
 }

@@ -18,6 +18,8 @@ class ServiceForm extends StatelessWidget {
     required this.maxCtrl,
     required this.videoPlatformCtrl,
     required this.videoUrlCtrl,
+    required this.locationCtrl,
+    required this.equipmentCtrl,
     required this.onSubmit,
     required this.loading,
   });
@@ -33,6 +35,8 @@ class ServiceForm extends StatelessWidget {
   final TextEditingController maxCtrl;
   final TextEditingController videoPlatformCtrl;
   final TextEditingController videoUrlCtrl;
+  final TextEditingController locationCtrl;
+  final TextEditingController equipmentCtrl;
   final VoidCallback? onSubmit;
   final bool loading;
 
@@ -122,6 +126,27 @@ class ServiceForm extends StatelessWidget {
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 12),
+        TextFormField(
+          controller: locationCtrl,
+          decoration: InputDecoration(
+            labelText: l10n.sessionLocation,
+            hintText: isMn ? 'Жишээ: Стадион А, 2-р корт' : 'e.g. Stadium A, Court 2',
+          ),
+          maxLines: 2,
+        ),
+        const SizedBox(height: 12),
+        TextFormField(
+          controller: equipmentCtrl,
+          decoration: InputDecoration(
+            labelText: l10n.requiredEquipment,
+            hintText: isMn
+                ? 'Жишээ: Теннисийн хар тамхи, ус'
+                : 'e.g. Tennis racket, water bottle',
+            alignLabelWithHint: true,
+          ),
+          maxLines: 2,
         ),
         const SizedBox(height: 12),
         Row(

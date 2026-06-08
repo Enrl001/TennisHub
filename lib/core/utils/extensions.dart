@@ -1,8 +1,14 @@
 import 'package:intl/intl.dart';
 
+import '../../l10n/app_localizations.dart';
+import 'locale_format.dart';
+
 extension DateTimeExtensions on DateTime {
-  String toDisplayDate() => DateFormat('EEE, MMM d, yyyy').format(this);
-  String toDisplayDateTime() => DateFormat('MMM d, yyyy • h:mm a').format(this);
+  String toDisplayDate([String localeCode = 'mn']) =>
+      LocaleFormat(localeCode).displayDate(this);
+
+  String toDisplayDateTime([String localeCode = 'mn']) =>
+      LocaleFormat(localeCode).displayDateTime(this);
   bool isSameDay(DateTime other) =>
       year == other.year && month == other.month && day == other.day;
 }
@@ -11,16 +17,16 @@ extension StringExtensions on String {
   String capitalize() =>
       isEmpty ? this : '${this[0].toUpperCase()}${substring(1)}';
 
-  String serviceTypeLabel() {
+  String serviceTypeLabel(AppLocalizations l10n) {
     switch (this) {
       case 'private_lesson':
-        return 'Private Lesson';
+        return l10n.privateLesson;
       case 'group_lesson':
-        return 'Group Lesson';
+        return l10n.groupLesson;
       case 'community_event':
-        return 'Community Event';
+        return l10n.communityEvent;
       case 'virtual_session':
-        return 'Virtual Session';
+        return l10n.virtualSession;
       default:
         return capitalize();
     }

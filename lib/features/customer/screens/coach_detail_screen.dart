@@ -5,8 +5,10 @@ import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/extensions/local_ext.dart';
 import '../../../shared/models/models.dart';
+import '../../../shared/widgets/hub_ui.dart';
 import '../../../shared/widgets/service_chip.dart';
 import '../../../shared/widgets/star_rating.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../booking/booking_flow.dart';
 import '../../coach/providers/coach_provider.dart';
 
@@ -18,11 +20,12 @@ class CoachDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final locale = Localizations.localeOf(context).languageCode;
+    final locale = ref.watch(localeProvider);
     final coachAsync = ref.watch(coachDetailProvider(coachId));
     final reviewsAsync = ref.watch(coachReviewsProvider(coachId));
 
     return Scaffold(
+      backgroundColor: HubStyle.pageBg,
       body: coachAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, __) => Center(child: Text(e.toString())),
@@ -41,11 +44,11 @@ class CoachDetailScreen extends ConsumerWidget {
                           fit: BoxFit.cover,
                         )
                       : Container(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: HubStyle.hubOlive.withValues(alpha: 0.1),
                           child: const Icon(
                             Icons.person,
                             size: 80,
-                            color: AppColors.primary,
+                            color: HubStyle.hubOlive,
                           ),
                         ),
                 ),
@@ -64,7 +67,7 @@ class CoachDetailScreen extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  profile?.fullName ?? 'Coach',
+                                  profile?.fullName ?? l10n.coach,
                                   style: Theme.of(context)
                                       .textTheme
                                       .headlineSmall
@@ -102,7 +105,7 @@ class CoachDetailScreen extends ConsumerWidget {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                '${coach.totalReviews ?? 0} reviews',
+                                l10n.reviewCount(coach.totalReviews ?? 0),
                                 style: const TextStyle(
                                   color: Colors.grey,
                                   fontSize: 12,
@@ -119,14 +122,14 @@ class CoachDetailScreen extends ConsumerWidget {
                             const Icon(
                               Icons.workspace_premium_outlined,
                               size: 14,
-                              color: AppColors.primary,
+                              color: HubStyle.hubOlive,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               l10n.experienceYears(coach.yearsExperience!),
                               style: const TextStyle(
                                 fontSize: 13,
-                                color: AppColors.primary,
+                                color: HubStyle.hubOlive,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -138,7 +141,7 @@ class CoachDetailScreen extends ConsumerWidget {
                       const SizedBox(height: 8),
                       Text(
                         coach.localBio(locale).isEmpty
-                            ? 'No bio provided.'
+                            ? l10n.noBioProvided
                             : coach.localBio(locale),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey.shade700,
@@ -244,10 +247,8 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-    title,
-    style: Theme.of(
-      context,
-    ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+    title.toUpperCase(),
+    style: HubStyle.calendarEyebrow,
   );
 }
 
@@ -264,11 +265,9 @@ class _ServiceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Card(
+    return HubCard(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
+      child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
@@ -313,7 +312,7 @@ class _ServiceTile extends StatelessWidget {
                   Text(
                     '${service.priceAmount!.toStringAsFixed(0)} ${service.currency ?? 'USD'}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.primary,
+                      color: HubStyle.hubOlive,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -335,7 +334,6 @@ class _ServiceTile extends StatelessWidget {
               ],
             ),
           ],
-        ),
       ),
     );
   }
@@ -354,7 +352,7 @@ class _ReviewTile extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: AppColors.primary.withOpacity(0.1),
+            backgroundColor: HubStyle.hubOlive.withValues(alpha: 0.1),
             child: Text(
               (review.customer?.fullName ?? 'A')[0].toUpperCase(),
               style: const TextStyle(

@@ -11,6 +11,14 @@ extension BilingualService on Service {
 
   String localDescription(String locale) =>
       locale == 'mn' ? (descriptionMn ?? description ?? '') : (description ?? '');
+
+  String localLocation(String locale) =>
+      locale == 'mn' ? (locationMn ?? location ?? '') : (location ?? '');
+
+  String localEquipment(String locale) =>
+      locale == 'mn'
+          ? (requiredEquipmentMn ?? requiredEquipment ?? '')
+          : (requiredEquipment ?? '');
 }
 
 extension BilingualNotification on AppNotification {

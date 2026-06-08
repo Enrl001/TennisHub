@@ -32,6 +32,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context);
     setState(() => _loading = true);
     try {
       final needsConfirmation = await ref.read(authProvider.notifier).signUp(
@@ -42,9 +43,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           );
       if (!mounted) return;
       if (needsConfirmation) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Check your email and click the confirmation link, then sign in.'),
-          duration: Duration(seconds: 6),
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l10n.checkEmailConfirm),
+          duration: const Duration(seconds: 6),
         ));
       } else {
         if (_selectedRole == 'coach') {
@@ -58,11 +59,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (!mounted) return;
       String message = e.toString();
       if (message.contains('already registered') || message.contains('already been registered')) {
-        message = 'This email is already registered. Try signing in instead.';
+        message = l10n.emailAlreadyRegistered;
       } else if (message.contains('Password should be')) {
-        message = 'Password must be at least 6 characters.';
+        message = l10n.passwordTooShort;
       } else if (message.contains('Unable to validate email')) {
-        message = 'Please enter a valid email address.';
+        message = l10n.invalidEmail;
       }
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message), backgroundColor: AppColors.statusCancelled));
@@ -75,6 +76,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
+      backgroundColor: HubStyle.pageBg,
       appBar: AppBar(title: Text(l10n.register)),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -87,7 +89,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 Text(l10n.signUp,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 8),
-                Text('Create your MyClub account',
+                Text(l10n.createAccountSubtitle,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey)),
                 const SizedBox(height: 32),
 
@@ -95,12 +97,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 TextFormField(
                   controller: _nameCtrl,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(
-                    labelText: 'Full name',
-                    prefixIcon: Icon(Icons.person_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.fullName,
+                    prefixIcon: const Icon(Icons.person_outline),
                   ),
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Please enter your name' : null,
+                      (v == null || v.trim().isEmpty) ? l10n.enterYourName : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -133,14 +135,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 28),
 
                 // Role selection
-                Text('I am a…',
+                Text(l10n.roleSelectTitle,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 Row(children: [
                   Expanded(
                     child: _RoleOption(
                       icon: Icons.person,
-                      label: 'Player',
+                      label: l10n.roleCustomer,
                       selected: _selectedRole == 'customer',
                       onTap: () => setState(() => _selectedRole = 'customer'),
                     ),
@@ -149,7 +151,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   Expanded(
                     child: _RoleOption(
                       icon: Icons.sports_tennis,
-                      label: 'Coach',
+                      label: l10n.roleCoach,
                       selected: _selectedRole == 'coach',
                       onTap: () => setState(() => _selectedRole = 'coach'),
                     ),

@@ -18,10 +18,6 @@ class NotificationsScreen extends ConsumerWidget {
     final notificationsAsync = ref.watch(notificationsStreamProvider);
     final profile = ref.watch(currentProfileProvider);
     final isCoach = profile?.role == 'coach';
-    final handledNotificationIds = ref.watch(
-      handledBookingNotificationsProvider,
-    );
-
     return Scaffold(
       backgroundColor: HubStyle.pageBg,
       appBar: AppBar(
@@ -65,15 +61,14 @@ class NotificationsScreen extends ConsumerWidget {
                   ? (n.bodyMn ?? n.body ?? '')
                   : (n.body ?? '');
               final bookingId = n.data?['booking_id']?.toString();
-              final isBookingRequest =
+              final showCoachBookingInfo =
                   n.type == 'new_booking' &&
                   isCoach &&
-                  bookingId != null &&
-                  !handledNotificationIds.contains(n.id);
+                  bookingId != null;
               final showCustomerPay =
                   !isCoach &&
-                  n.type == 'booking_confirmed' &&
-                  bookingId != null;
+                  bookingId != null &&
+                  (n.type == 'new_booking' || n.type == 'booking_confirmed');
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,7 +110,7 @@ class NotificationsScreen extends ConsumerWidget {
                           ),
                         if (n.createdAt != null)
                           Text(
-                            n.createdAt!.toDisplayDateTime(),
+                            n.createdAt!.toDisplayDateTime(locale),
                             style: const TextStyle(
                               fontSize: 11,
                               color: Colors.grey,
@@ -130,11 +125,9 @@ class NotificationsScreen extends ConsumerWidget {
                         .read(notificationActionsProvider.notifier)
                         .markAsRead(n.id),
                   ),
-                  // Approve / Reject actions for coach on new booking requests
-                  if (isBookingRequest)
-                    _BookingActions(
+                  if (showCoachBookingInfo)
+                    _CoachBookingInfo(
                       bookingId: bookingId,
-                      notificationId: n.id,
                       locale: locale,
                     ),
                   if (showCustomerPay) BookingPayBar(bookingId: bookingId),
@@ -187,212 +180,38 @@ class _EmptyNotifications extends StatelessWidget {
   );
 }
 
-class _BookingActions extends ConsumerStatefulWidget {
-  const _BookingActions({
+class _CoachBookingInfo extends ConsumerWidget {
+  const _CoachBookingInfo({
     required this.bookingId,
-    required this.notificationId,
     required this.locale,
   });
+
   final String bookingId;
-  final String notificationId;
   final String locale;
 
   @override
-  ConsumerState<_BookingActions> createState() => _BookingActionsState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isMn = locale == 'mn';
+    final booking = ref.watch(bookingDetailProvider(bookingId)).value;
+    if (booking == null) return const SizedBox.shrink();
 
-class _BookingActionsState extends ConsumerState<_BookingActions> {
-  bool _loading = false;
-  String? _done; // 'approved' | 'rejected'
-
-  String _errorMessage(Object error) {
-    final isMn = widget.locale == 'mn';
-    final message = error.toString();
-    if (message.contains('Not enough available places')) {
-      return isMn
-          ? 'Энэ цагийн сул орон зай дууссан байна.'
-          : 'This time slot is already full.';
-    }
-    return isMn ? 'Үйлдэл амжилтгүй боллоо.' : 'Action failed.';
-  }
-
-  Future<void> _approve() async {
-    setState(() => _loading = true);
-    final bookingActions = ref.read(bookingProvider.notifier);
-    final notificationActions = ref.read(notificationActionsProvider.notifier);
-    try {
-      await bookingActions.approveBooking(widget.bookingId);
-      if (!mounted) return;
-      await notificationActions.markAsRead(widget.notificationId);
-      if (!mounted) return;
-      ref
-          .read(handledBookingNotificationsProvider.notifier)
-          .markHandled(widget.notificationId);
-      setState(() => _done = 'approved');
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_errorMessage(e)),
-            backgroundColor: AppColors.statusCancelled,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  Future<void> _reject() async {
-    setState(() => _loading = true);
-    final bookingActions = ref.read(bookingProvider.notifier);
-    final notificationActions = ref.read(notificationActionsProvider.notifier);
-    try {
-      await bookingActions.rejectBooking(widget.bookingId);
-      if (!mounted) return;
-      await notificationActions.markAsRead(widget.notificationId);
-      if (!mounted) return;
-      ref
-          .read(handledBookingNotificationsProvider.notifier)
-          .markHandled(widget.notificationId);
-      setState(() => _done = 'rejected');
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_errorMessage(e)),
-            backgroundColor: AppColors.statusCancelled,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isMn = widget.locale == 'mn';
-    final bookingAsync = ref.watch(bookingDetailProvider(widget.bookingId));
-
-    if (_done == 'approved') {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(72, 0, 16, 10),
-        child: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 16),
-            const SizedBox(width: 6),
-            Text(
-              isMn ? 'Баталгаажуулсан' : 'Confirmed',
-              style: const TextStyle(
-                color: Colors.green,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-    if (_done == 'rejected') {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(72, 0, 16, 10),
-        child: Row(
-          children: [
-            Icon(Icons.cancel, color: Colors.grey.shade400, size: 16),
-            const SizedBox(width: 6),
-            Text(
-              isMn ? 'Цуцалсан' : 'Rejected',
-              style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-            ),
-          ],
-        ),
-      );
-    }
-
-    final booking = bookingAsync.value;
-    if (bookingAsync.isLoading && booking == null) {
-      return const Padding(
-        padding: EdgeInsets.fromLTRB(72, 0, 16, 10),
-        child: SizedBox(
-          height: 24,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          ),
-        ),
-      );
-    }
-    if (booking == null || booking.status != 'pending') {
-      final status = booking?.status ?? '';
-      if (status.isEmpty) return const SizedBox.shrink();
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(72, 0, 16, 10),
-        child: Text(
-          status == 'confirmed'
-              ? (isMn ? 'Баталгаажсан' : 'Confirmed')
-              : status,
-          style: TextStyle(
-            color: AppColors.statusColor(status),
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      );
-    }
+    final label = switch (booking.status) {
+      'confirmed' => isMn ? 'Төлбөр төлөгдсөн · баталгаажсан' : 'Paid · confirmed',
+      'pending' => isMn ? 'Төлбөр хүлээгдэж байна' : 'Awaiting customer payment',
+      'cancelled' => isMn ? 'Цуцлагдсан' : 'Cancelled',
+      _ => booking.status,
+    };
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(72, 0, 16, 10),
-      child: _loading
-          ? const SizedBox(
-              height: 28,
-              child: Center(
-                child: SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          : Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _reject,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.statusCancelled,
-                      side: const BorderSide(color: AppColors.statusCancelled),
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      visualDensity: VisualDensity.compact,
-                    ),
-                    child: Text(
-                      isMn ? 'Татгалзах' : 'Decline',
-                      style: const TextStyle(fontSize: 13),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _approve,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      visualDensity: VisualDensity.compact,
-                    ),
-                    child: Text(
-                      isMn ? 'Зөвшөөрөх' : 'Approve',
-                      style: const TextStyle(fontSize: 13),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: AppColors.statusColor(booking.status),
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }

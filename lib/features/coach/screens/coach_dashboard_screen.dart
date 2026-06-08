@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/locale_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/extensions/local_ext.dart';
 import '../../../shared/models/models.dart';
@@ -13,10 +13,6 @@ import '../../coach/providers/coach_provider.dart';
 
 class CoachDashboardScreen extends ConsumerWidget {
   const CoachDashboardScreen({super.key});
-
-  static const _pageBg = Color(0xFFF5F6F8);
-  static const _hubOlive = Color(0xFF526300);
-  static const _darkPanel = Color(0xFF252B2B);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,13 +37,6 @@ class CoachDashboardScreen extends ConsumerWidget {
             ),
           );
     final nextBooking = activeBookings.isNotEmpty ? activeBookings.first : null;
-    final todayBookings = activeBookings.where((b) {
-      final d = b.slot?.startsAt;
-      return d != null &&
-          d.year == now.year &&
-          d.month == now.month &&
-          d.day == now.day;
-    }).toList();
     final totalEarnings = bookings
         .where((b) => b.status == 'confirmed' || b.status == 'completed')
         .fold<double>(0, (sum, b) => sum + (b.amountPaid ?? 0));
@@ -58,16 +47,16 @@ class CoachDashboardScreen extends ConsumerWidget {
         .length;
 
     return Scaffold(
-      backgroundColor: _pageBg,
+      backgroundColor: HubStyle.pageBg,
       appBar: AppBar(
-        backgroundColor: _pageBg,
+        backgroundColor: HubStyle.pageBg,
         toolbarHeight: 64,
         titleSpacing: 16,
         title: Row(
           children: [
             CircleAvatar(
               radius: 18,
-              backgroundColor: AppColors.primary.withOpacity(0.12),
+              backgroundColor: HubStyle.hubOlive.withValues(alpha: 0.12),
               backgroundImage: profile?.avatarUrl != null
                   ? NetworkImage(profile!.avatarUrl!)
                   : null,
@@ -77,28 +66,20 @@ class CoachDashboardScreen extends ConsumerWidget {
                           ? profile!.fullName!.trim()[0].toUpperCase()
                           : 'C',
                       style: const TextStyle(
-                        color: AppColors.primary,
+                        color: HubStyle.hubOlive,
                         fontWeight: FontWeight.w800,
                       ),
                     )
                   : null,
             ),
             const SizedBox(width: 10),
-            const Text(
-              'COACH HUB',
-              style: TextStyle(
-                color: _hubOlive,
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
+            const Text('COACH HUB', style: HubStyle.brandTitle),
           ],
         ),
         actions: [
           IconButton(
             onPressed: () => context.push('/coach-notifications'),
-            icon: const Icon(Icons.notifications_none, color: _hubOlive),
+            icon: const Icon(Icons.notifications_none, color: HubStyle.hubOlive),
             tooltip: l10n.notifications,
           ),
         ],
@@ -116,7 +97,7 @@ class CoachDashboardScreen extends ConsumerWidget {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
           children: [
-            _NextSessionCard(booking: nextBooking, isMn: isMn),
+            _NextSessionCard(booking: nextBooking, locale: locale),
             const SizedBox(height: 14),
             Row(
               children: [
@@ -150,12 +131,6 @@ class CoachDashboardScreen extends ConsumerWidget {
               services: services,
               locale: locale,
             ),
-            const SizedBox(height: 22),
-            _ScheduleSection(
-              bookingsAsync: bookingsAsync,
-              bookings: todayBookings,
-              isMn: isMn,
-            ),
           ],
         ),
       ),
@@ -164,21 +139,23 @@ class CoachDashboardScreen extends ConsumerWidget {
 }
 
 class _NextSessionCard extends StatelessWidget {
-  const _NextSessionCard({required this.booking, required this.isMn});
+  const _NextSessionCard({required this.booking, required this.locale});
 
   final Booking? booking;
-  final bool isMn;
+  final String locale;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final fmt = LocaleFormat(locale);
     final service = booking?.service ?? booking?.slot?.service;
     final slot = booking?.slot;
     final title = service == null
-        ? (isMn ? 'Дараагийн хичээл алга' : 'No upcoming session')
-        : (isMn ? (service.titleMn ?? service.title) : service.title);
+        ? (fmt.isMn ? 'Дараагийн хичээл алга' : 'No upcoming session')
+        : (fmt.isMn ? (service.titleMn ?? service.title) : service.title);
     final time = slot == null
-        ? (isMn ? 'Хуваарь хоосон байна' : 'Schedule is clear')
-        : '${DateFormat('h:mm a').format(slot.startsAt)} - ${DateFormat('h:mm a').format(slot.endsAt)}';
+        ? (fmt.isMn ? 'Хуваарь хоосон байна' : 'Schedule is clear')
+        : fmt.timeRange(slot.startsAt, slot.endsAt);
     final startsIn = slot == null
         ? null
         : slot.startsAt.difference(DateTime.now());
@@ -186,16 +163,16 @@ class _NextSessionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.tennisGreen,
-        borderRadius: BorderRadius.circular(8),
+        color: HubStyle.accentLime,
+        borderRadius: BorderRadius.circular(HubStyle.radiusSm),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            isMn ? 'ДАРААГИЙН ХИЧЭЭЛ' : 'UPCOMING SESSION',
+            fmt.isMn ? 'ДАРААГИЙН ХИЧЭЭЛ' : 'UPCOMING SESSION',
             style: const TextStyle(
-              color: Color(0xFF4B5F00),
+              color: HubStyle.hubOliveDark,
               fontSize: 11,
               fontWeight: FontWeight.w800,
             ),
@@ -212,13 +189,13 @@ class _NextSessionCard extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.schedule, size: 14, color: Color(0xFF526300)),
+              const Icon(Icons.schedule, size: 14, color: HubStyle.hubOlive),
               const SizedBox(width: 5),
               Expanded(
                 child: Text(
                   time,
                   style: const TextStyle(
-                    color: Color(0xFF526300),
+                    color: HubStyle.hubOlive,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -229,9 +206,7 @@ class _NextSessionCard extends StatelessWidget {
           if (startsIn != null && startsIn.inMinutes >= 0) ...[
             const SizedBox(height: 14),
             Text(
-              isMn
-                  ? '${startsIn.inMinutes} минутын дараа эхэлнэ'
-                  : 'Starts in ${startsIn.inMinutes} min',
+              l10n.startsInMinutes(startsIn.inMinutes),
               style: const TextStyle(
                 color: Color(0xFF2D3400),
                 fontSize: 12,
@@ -259,7 +234,7 @@ class _TopActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: CoachDashboardScreen._darkPanel,
+      color: HubStyle.darkPanel,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onTap,
@@ -506,177 +481,20 @@ class _ServiceRow extends StatelessWidget {
   }
 }
 
-class _ScheduleSection extends StatelessWidget {
-  const _ScheduleSection({
-    required this.bookingsAsync,
-    required this.bookings,
-    required this.isMn,
-  });
-
-  final AsyncValue<List<Booking>> bookingsAsync;
-  final List<Booking> bookings;
-  final bool isMn;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _SectionHeader(
-          title: isMn ? 'Өнөөдрийн хуваарь' : "Today's Schedule",
-          action: TextButton(
-            onPressed: () => context.push('/coach-calendar'),
-            child: Text(
-              isMn ? 'Сараар харах' : 'View Monthly',
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        bookingsAsync.when(
-          loading: () => _EmptyText(
-            text: isMn ? 'Өнөөдөр хичээл алга' : 'No sessions today',
-          ),
-          error: (_, __) => _EmptyText(
-            text: isMn ? 'Өнөөдөр хичээл алга' : 'No sessions today',
-          ),
-          data: (_) {
-            if (bookings.isEmpty) {
-              return _EmptyText(
-                text: isMn ? 'Өнөөдөр хичээл алга' : 'No sessions today',
-              );
-            }
-            return Column(
-              children: bookings
-                  .map((booking) => _ScheduleTile(booking: booking, isMn: isMn))
-                  .toList(),
-            );
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class _ScheduleTile extends StatelessWidget {
-  const _ScheduleTile({required this.booking, required this.isMn});
-
-  final Booking booking;
-  final bool isMn;
-
-  @override
-  Widget build(BuildContext context) {
-    final slot = booking.slot;
-    final service = booking.service ?? slot?.service;
-    final time = slot == null
-        ? '--'
-        : '${DateFormat('h:mm a').format(slot.startsAt)} - ${DateFormat('h:mm a').format(slot.endsAt)}';
-    final title = service == null
-        ? (isMn ? 'Хичээл' : 'Session')
-        : (isMn ? (service.titleMn ?? service.title) : service.title);
-    final customer =
-        booking.customer?.fullName ?? (isMn ? 'Хэрэглэгч' : 'Customer');
-    final statusColor = AppColors.statusColor(booking.status);
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border(left: BorderSide(color: statusColor, width: 4)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  time,
-                  style: const TextStyle(
-                    color: Color(0xFF6B7280),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Color(0xFF181A20),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  customer,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Color(0xFF4B5563),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              booking.status.toUpperCase(),
-              style: TextStyle(
-                color: statusColor,
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title, this.action});
+  const _SectionHeader({required this.title});
 
   final String title;
-  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            title,
-            style: const TextStyle(
-              color: Color(0xFF181A20),
-              fontSize: 17,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ),
-        if (action != null) action!,
-      ],
+    return Text(
+      title,
+      style: const TextStyle(
+        color: Color(0xFF181A20),
+        fontSize: 17,
+        fontWeight: FontWeight.w900,
+      ),
     );
   }
 }

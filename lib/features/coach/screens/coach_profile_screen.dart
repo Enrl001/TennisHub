@@ -44,7 +44,7 @@ class CoachProfileScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   Text(
                     isMn
-                        ? 'Тренерийн мэдээлэл олдсонгүй'
+                        ? 'Дасгалжуулагчийн мэдээлэл олдсонгүй'
                         : 'No coach profile yet',
                   ),
                   const SizedBox(height: 12),

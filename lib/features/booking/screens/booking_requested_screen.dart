@@ -28,8 +28,8 @@ class BookingRequestedScreen extends ConsumerWidget {
     final amount = booking?.amountPaid ?? 0;
     final canPay = booking != null &&
         bookingHasPrice(booking) &&
-        booking.status == 'confirmed' &&
-        paidAsync?.value == false;
+        booking.status == 'pending' &&
+        paidAsync?.value != true;
 
     return Scaffold(
       backgroundColor: HubStyle.pageBg,
@@ -67,8 +67,8 @@ class BookingRequestedScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
                 Text(
                   canPay
-                      ? (isMn ? 'Захиалга баталгаажлаа!' : 'Booking Approved!')
-                      : (isMn ? 'Захиалга илгээгдлээ!' : 'Booking Requested!'),
+                      ? (isMn ? 'Төлбөрөө төлнө үү' : 'Complete your payment')
+                      : (isMn ? 'Захиалга баталгаажлаа!' : 'Booking confirmed!'),
                   style: const TextStyle(
                     color: HubStyle.textPrimary,
                     fontSize: 22,
@@ -80,11 +80,11 @@ class BookingRequestedScreen extends ConsumerWidget {
                 Text(
                   canPay
                       ? (isMn
-                          ? 'Төлбөрөө төлсний дараа захиалга бүрэн баталгаажна.'
-                          : 'Complete payment to finalize your booking.')
+                          ? 'Төлбөр төлсний дараа захиалга автоматаар баталгаажна.'
+                          : 'Your booking is confirmed automatically after payment.')
                       : (isMn
-                          ? 'Тренер таны захиалгыг хянаж байна. Баталгаажсаны дараа мэдэгдэл ирнэ.'
-                          : 'Your coach will review your request. You\'ll be notified once it\'s approved.'),
+                          ? 'Таны захиалга амжилттай баталгаажлаа.'
+                          : 'Your booking is confirmed.'),
                   style: const TextStyle(
                     color: HubStyle.textMuted,
                     fontSize: 15,

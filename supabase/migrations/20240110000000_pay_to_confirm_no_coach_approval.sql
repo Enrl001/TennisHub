@@ -1,67 +1,5 @@
--- Reliable customer booking: SECURITY DEFINER RPC updates slot counts and inserts
--- the booking (avoids customer RLS blocking time_slots updates on triggers).
+-- Bookings are confirmed by payment (or immediately when free), not by coach approval.
 
--- Slot count trigger: only adjust counts on status UPDATE (inserts use RPC below).
-create or replace function public.update_slot_booked_count()
-returns trigger
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_old_active boolean;
-  v_new_active boolean;
-begin
-  if tg_op <> 'UPDATE' then
-    return new;
-  end if;
-
-  v_old_active := old.status in ('confirmed', 'pending');
-  v_new_active := new.status in ('confirmed', 'pending');
-
-  if v_old_active and (not v_new_active or old.slot_id is distinct from new.slot_id) then
-    update public.time_slots
-    set booked_count = greatest(0, booked_count - 1)
-    where id = old.slot_id;
-  end if;
-
-  if v_new_active and (not v_old_active or old.slot_id is distinct from new.slot_id) then
-    update public.time_slots
-    set booked_count = booked_count + 1
-    where id = new.slot_id;
-  end if;
-
-  return new;
-end;
-$$;
-
-drop trigger if exists trg_update_slot_count on public.bookings;
-create trigger trg_update_slot_count
-  after update on public.bookings
-  for each row execute function public.update_slot_booked_count();
-
--- Profile helper: support text role column (no user_role enum required).
-create or replace function public.create_profile(
-  p_user_id uuid,
-  p_user_role text,
-  p_full_name text default null
-)
-returns void
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  insert into public.profiles (id, role, full_name)
-  values (p_user_id, p_user_role, p_full_name)
-  on conflict (id) do update
-    set full_name = coalesce(excluded.full_name, public.profiles.full_name);
-end;
-$$;
-
-grant execute on function public.create_profile(uuid, text, text) to anon, authenticated;
-
--- Main booking entry point for the mobile app.
 create or replace function public.create_customer_booking(
   p_slot_id uuid,
   p_service_id uuid,
@@ -78,7 +16,6 @@ declare
   v_customer_id uuid := auth.uid();
   v_booking_id uuid;
   v_status text;
-  v_service_type text;
   v_max integer;
   v_booked integer;
   v_slot_coach_id uuid;
@@ -98,14 +35,12 @@ begin
   select
     coalesce(s.max_participants, 1),
     coalesce(ts.booked_count, 0),
-    s.type,
     ts.coach_id,
     s.title,
     ts.starts_at
   into
     v_max,
     v_booked,
-    v_service_type,
     v_slot_coach_id,
     v_service_title,
     v_slot_start
@@ -127,6 +62,7 @@ begin
     raise exception 'Not enough available places for this time slot' using errcode = 'P0001';
   end if;
 
+  -- Free = confirmed now; paid = pending until Smartpay webhook sets confirmed.
   v_status := case when coalesce(p_amount, 0) <= 0 then 'confirmed' else 'pending' end;
 
   insert into public.bookings (
@@ -167,7 +103,7 @@ begin
       values (
         v_coach_profile_id,
         'new_booking',
-        'New Booking Request',
+        'New Booking',
         'Шинэ захиалга',
         coalesce(v_customer_name, 'A customer') || ' booked ' || coalesce(v_service_title, 'a session'),
         coalesce(v_customer_name, 'Хэрэглэгч') || ' захиалга хийлээ: ' || coalesce(v_service_title, ''),

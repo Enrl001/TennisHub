@@ -12,7 +12,7 @@ create table if not exists public.profiles (
   full_name     text,
   avatar_url    text,
   phone         text,
-  locale        text default 'en',
+  locale        text default 'mn',
   fcm_token     text,
   created_at    timestamptz default now()
 );

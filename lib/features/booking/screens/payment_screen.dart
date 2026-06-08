@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
 import '../booking_flow.dart';
@@ -197,6 +198,15 @@ class _InvoiceView extends StatelessWidget {
                     fontSize: 36,
                     fontWeight: FontWeight.w700),
               ),
+              if (currency.toUpperCase() != 'MNT') ...[
+                const SizedBox(height: 8),
+                Text(
+                  isMn
+                      ? 'Smartpay: ${(amount * AppConstants.smartpayMntPerUsd).round()} ₮'
+                      : 'Smartpay charge: ${(amount * AppConstants.smartpayMntPerUsd).round()} MNT',
+                  style: const TextStyle(color: Colors.white60, fontSize: 13),
+                ),
+              ],
             ],
           ),
         ),

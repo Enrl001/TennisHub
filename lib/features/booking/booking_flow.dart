@@ -114,6 +114,20 @@ void goBookingSuccess(BuildContext context, String bookingId) {
   context.goNamed('bookingSuccess', queryParameters: {'bookingId': bookingId});
 }
 
+void openSession(BuildContext context, String bookingId) {
+  context.pushNamed(
+    'session',
+    queryParameters: {'bookingId': bookingId},
+  );
+}
+
+void openSessionSlot(BuildContext context, String slotId) {
+  context.pushNamed(
+    'session',
+    queryParameters: {'slotId': slotId},
+  );
+}
+
 /// After creating a booking, go to Smartpay payment or success if free.
 void navigateAfterBooking(
   BuildContext context, {

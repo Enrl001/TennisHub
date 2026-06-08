@@ -6,7 +6,7 @@ import '../booking_flow.dart';
 import '../providers/booking_provider.dart';
 import '../providers/payment_provider.dart';
 
-/// Pay-now action when a booking is approved but not yet paid.
+/// Pay-now action for unpaid bookings (pending until Smartpay completes).
 class BookingPayBar extends ConsumerWidget {
   const BookingPayBar({super.key, required this.bookingId});
 
@@ -26,8 +26,6 @@ class BookingPayBar extends ConsumerWidget {
     if (booking.status != 'confirmed' && booking.status != 'pending') {
       return const SizedBox.shrink();
     }
-    // Private lessons: pay only after coach confirms.
-    if (booking.status == 'pending') return const SizedBox.shrink();
 
     final amount = booking.amountPaid ?? 0;
 

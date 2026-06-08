@@ -217,7 +217,7 @@ final class CoachProfileNotifierProvider
 }
 
 String _$coachProfileNotifierHash() =>
-    r'cf25c15c86d57be445eb2ca6c0dcd368159ff3c9';
+    r'0ffa62419c977eb32220329b4f545dac225f5105';
 
 abstract class _$CoachProfileNotifier extends $AsyncNotifier<void> {
   FutureOr<void> build();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/locale_format.dart';
 import '../../l10n/app_localizations.dart';
 import '../models/models.dart';
 
@@ -48,6 +48,7 @@ class _SlotPickerState extends State<SlotPicker> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final fmt = LocaleFormat(Localizations.localeOf(context).languageCode);
     final dates = _dates;
     final slotsForDay = _selectedDate != null
         ? _slotsForDate(_selectedDate!)
@@ -78,11 +79,11 @@ class _SlotPickerState extends State<SlotPicker> {
                   duration: const Duration(milliseconds: 200),
                   width: 56,
                   decoration: BoxDecoration(
-                    color: selected ? AppColors.primary : Colors.white,
+                    color: selected ? HubStyle.hubOlive : Colors.white,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: selected
-                          ? AppColors.primary
+                          ? HubStyle.hubOlive
                           : AppColors.cardBorder,
                     ),
                   ),
@@ -90,7 +91,7 @@ class _SlotPickerState extends State<SlotPicker> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        _weekday(d),
+                        fmt.weekdayShort(d),
                         style: TextStyle(
                           fontSize: 11,
                           color: selected ? Colors.white70 : Colors.grey,
@@ -109,7 +110,7 @@ class _SlotPickerState extends State<SlotPicker> {
                         ),
                       ),
                       Text(
-                        _month(d),
+                        fmt.monthShort(d),
                         style: TextStyle(
                           fontSize: 11,
                           color: selected ? Colors.white70 : Colors.grey,
@@ -154,21 +155,21 @@ class _SlotPickerState extends State<SlotPicker> {
                       color: isFull
                           ? Colors.grey.shade100
                           : isSelected
-                          ? AppColors.primary
+                          ? HubStyle.hubOlive
                           : Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: isFull
                             ? Colors.grey.shade300
                             : isSelected
-                            ? AppColors.primary
+                            ? HubStyle.hubOlive
                             : AppColors.cardBorder,
                       ),
                     ),
                     child: Column(
                       children: [
                         Text(
-                          _timeFormat.format(slot.startsAt),
+                          fmt.time(slot.startsAt),
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
@@ -214,23 +215,6 @@ class _SlotPickerState extends State<SlotPicker> {
     );
   }
 
-  String _weekday(DateTime d) =>
-      ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][d.weekday - 1];
-  String _month(DateTime d) => [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ][d.month - 1];
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
-  static final _timeFormat = DateFormat('h:mm a');
 }

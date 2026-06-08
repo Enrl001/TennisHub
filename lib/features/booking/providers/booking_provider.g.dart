@@ -64,7 +64,7 @@ final class ServiceSlotsProvider
   }
 }
 
-String _$serviceSlotsHash() => r'e6f37287c16c7f058849b9556472844a636a3a7e';
+String _$serviceSlotsHash() => r'fe98514bcd99183aff28478836071637986a6398';
 
 final class ServiceSlotsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<TimeSlot>>, String> {
@@ -121,7 +121,7 @@ final class MyBookingsProvider
   }
 }
 
-String _$myBookingsHash() => r'14b1bcedc7a4c153e611733bf614d4dc02758c3d';
+String _$myBookingsHash() => r'f42d9d84787859a47726e3d22c5b5794a3f2ab63';
 
 @ProviderFor(coachCalendarBookings)
 final coachCalendarBookingsProvider = CoachCalendarBookingsProvider._();
@@ -226,7 +226,7 @@ final class BookingNotifierProvider
   BookingNotifier create() => BookingNotifier();
 }
 
-String _$bookingNotifierHash() => r'108585fbf9ec0ea2aa14c07ebb16cd1f627f75ea';
+String _$bookingNotifierHash() => r'1b8e601057909131e3245820db3a59a89db977ac';
 
 abstract class _$BookingNotifier extends $AsyncNotifier<void> {
   FutureOr<void> build();

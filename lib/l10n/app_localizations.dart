@@ -464,33 +464,23 @@ abstract class AppLocalizations {
   /// **'Payment'**
   String get payment;
 
+  /// No description provided for @payWithSmartpay.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay with Smartpay'**
   String get payWithSmartpay;
 
+  /// No description provided for @paymentInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'You will be redirected to Smartpay to complete your payment'**
   String get paymentInstructions;
 
-  /// No description provided for @cardNumber.
+  /// No description provided for @waitingPayment.
   ///
   /// In en, this message translates to:
-  /// **'Card Number'**
-  String get cardNumber;
-
-  /// No description provided for @expiryDate.
-  ///
-  /// In en, this message translates to:
-  /// **'Expiry Date'**
-  String get expiryDate;
-
-  /// No description provided for @cvv.
-  ///
-  /// In en, this message translates to:
-  /// **'CVV'**
-  String get cvv;
-
-  /// No description provided for @cardholderName.
-  ///
-  /// In en, this message translates to:
-  /// **'Cardholder Name'**
-  String get cardholderName;
+  /// **'Waiting for payment...'**
+  String get waitingPayment;
 
   /// No description provided for @payNow.
   ///
@@ -810,6 +800,96 @@ abstract class AppLocalizations {
   /// **'Time slot created successfully'**
   String get slotCreated;
 
+  /// No description provided for @duplicateSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'A slot already exists at this time for this service.'**
+  String get duplicateSlot;
+
+  /// No description provided for @sessionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Details'**
+  String get sessionDetails;
+
+  /// No description provided for @requiredEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Required Equipment'**
+  String get requiredEquipment;
+
+  /// No description provided for @leaveReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a Review'**
+  String get leaveReview;
+
+  /// No description provided for @yourReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Review'**
+  String get yourReview;
+
+  /// No description provided for @reviewSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for your review!'**
+  String get reviewSubmitted;
+
+  /// No description provided for @reviewAfterSession.
+  ///
+  /// In en, this message translates to:
+  /// **'You can leave a review after the session ends.'**
+  String get reviewAfterSession;
+
+  /// No description provided for @participants.
+  ///
+  /// In en, this message translates to:
+  /// **'Participants'**
+  String get participants;
+
+  /// No description provided for @noEquipmentListed.
+  ///
+  /// In en, this message translates to:
+  /// **'No equipment listed'**
+  String get noEquipmentListed;
+
+  /// No description provided for @noLocationListed.
+  ///
+  /// In en, this message translates to:
+  /// **'Location not specified'**
+  String get noLocationListed;
+
+  /// No description provided for @writeReviewHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your experience...'**
+  String get writeReviewHint;
+
+  /// No description provided for @submitReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Review'**
+  String get submitReview;
+
+  /// No description provided for @sessionLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get sessionLocation;
+
+  /// No description provided for @serviceLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Session location'**
+  String get serviceLocation;
+
+  /// No description provided for @equipmentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Racket, shoes, water...'**
+  String get equipmentHint;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
@@ -947,6 +1027,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password must be at least 6 characters'**
   String get passwordTooShort;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get welcomeBack;
+
+  /// No description provided for @splashTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Find. Book. Play.'**
+  String get splashTagline;
+
+  /// No description provided for @roleSelectSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you will use MyClub'**
+  String get roleSelectSubtitle;
+
+  /// No description provided for @createAccountSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your MyClub account'**
+  String get createAccountSubtitle;
+
+  /// No description provided for @enterYourName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name'**
+  String get enterYourName;
+
+  /// No description provided for @checkEmailConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your email and click the confirmation link, then sign in.'**
+  String get checkEmailConfirm;
+
+  /// No description provided for @emailAlreadyRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is already registered. Try signing in instead.'**
+  String get emailAlreadyRegistered;
+
+  /// No description provided for @weeklyOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'WEEKLY OVERVIEW'**
+  String get weeklyOverview;
+
+  /// No description provided for @weekView.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get weekView;
+
+  /// No description provided for @monthView.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get monthView;
+
+  /// No description provided for @openSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Slot'**
+  String get openSlot;
+
+  /// No description provided for @statusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'OPEN'**
+  String get statusOpen;
+
+  /// No description provided for @playersBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'booked'**
+  String get playersBooked;
+
+  /// No description provided for @nothingScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing scheduled'**
+  String get nothingScheduled;
+
+  /// No description provided for @coach.
+  ///
+  /// In en, this message translates to:
+  /// **'Coach'**
+  String get coach;
+
+  /// No description provided for @customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get customer;
+
+  /// No description provided for @session.
+  ///
+  /// In en, this message translates to:
+  /// **'Session'**
+  String get session;
+
+  /// No description provided for @startsInMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts in {minutes} min'**
+  String startsInMinutes(int minutes);
+
+  /// No description provided for @noBioProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'No bio provided.'**
+  String get noBioProvided;
+
+  /// No description provided for @reviewCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reviews'**
+  String reviewCount(int count);
 }
 
 class _AppLocalizationsDelegate

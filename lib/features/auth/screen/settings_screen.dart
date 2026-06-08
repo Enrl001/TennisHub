@@ -19,6 +19,7 @@ class SettingsScreen extends ConsumerWidget {
     final isCoach = profile?.role == 'coach';
 
     return Scaffold(
+      backgroundColor: HubStyle.pageBg,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -26,13 +27,7 @@ class SettingsScreen extends ConsumerWidget {
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppColors.primary, Color(0xFF1B4332)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
+                color: HubStyle.darkPanel,
                 child: SafeArea(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -71,15 +66,15 @@ class SettingsScreen extends ConsumerWidget {
                           vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.tennisGreen,
+                          color: HubStyle.accentLime,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           isCoach
-                              ? (isMn ? 'Тренер' : 'Coach')
+                              ? (isMn ? 'Дасгалжуулагч' : 'Coach')
                               : (isMn ? 'Тоглогч' : 'Player'),
                           style: const TextStyle(
-                            color: Color(0xFF1A3A10),
+                            color: HubStyle.hubOliveDark,
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                           ),
@@ -212,7 +207,7 @@ class _BecomeCoachCard extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isMn ? 'Тренер болох' : 'Become a Coach',
+                      isMn ? 'Дасгалжуулагч болох' : 'Become a Coach',
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
@@ -242,12 +237,12 @@ class _BecomeCoachCard extends ConsumerWidget {
       builder: (ctx) => AlertDialog(
         title: Text(
           ref.read(localeProvider) == 'mn'
-              ? 'Тренер болох уу?'
+              ? 'Дасгалжуулагч болох уу?'
               : 'Become a Coach?',
         ),
         content: Text(
           ref.read(localeProvider) == 'mn'
-              ? 'Таны бүртгэл тренерийн бүртгэл болж шилжинэ. Хичээл нэмж, хуваарь гаргах боломжтой.'
+              ? 'Таны бүртгэл дасгалжуулагчийн бүртгэл болж шилжинэ. Хичээл нэмж, хуваарь гаргах боломжтой.'
               : 'Your account will be upgraded to a coach account. You can then add services and manage your schedule.',
         ),
         actions: [
@@ -295,7 +290,7 @@ class _CoachSection extends ConsumerWidget {
               onPressed: () => context.push('/edit-coach-profile'),
               icon: const Icon(Icons.add),
               label: Text(
-                isMn ? 'Тренерийн мэдээлэл нэмэх' : 'Complete coach profile',
+                isMn ? 'Дасгалжуулагчийн мэдээлэл нэмэх' : 'Complete coach profile',
               ),
             ),
           );

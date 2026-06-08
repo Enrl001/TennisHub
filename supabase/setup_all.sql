@@ -15,7 +15,7 @@ create table if not exists public.profiles (
   full_name     text,
   avatar_url    text,
   phone         text,
-  locale        text default 'en',
+  locale        text default 'mn',
   fcm_token     text,
   created_at    timestamptz default now()
 );
@@ -70,6 +70,10 @@ create table if not exists public.services (
   max_participants integer default 1,
   video_platform   text,
   video_url        text,
+  location         text,
+  location_mn      text,
+  required_equipment text,
+  required_equipment_mn text,
   is_active        boolean default true,
   created_at       timestamptz default now()
 );
@@ -98,6 +102,9 @@ create table if not exists public.time_slots (
   is_cancelled  boolean default false,
   created_at    timestamptz default now()
 );
+create unique index if not exists time_slots_coach_service_start_unique
+  on public.time_slots (coach_id, service_id, starts_at)
+  where (not is_cancelled and service_id is not null);
 alter table public.time_slots enable row level security;
 drop policy if exists "Time slots are viewable by everyone" on public.time_slots;
 create policy "Time slots are viewable by everyone"
@@ -225,15 +232,21 @@ alter table public.reviews enable row level security;
 drop policy if exists "Reviews are viewable by everyone" on public.reviews;
 create policy "Reviews are viewable by everyone"
   on public.reviews for select using (true);
+create unique index if not exists reviews_one_per_booking
+  on public.reviews (booking_id);
 drop policy if exists "Customers can create reviews for completed bookings" on public.reviews;
-create policy "Customers can create reviews for completed bookings"
+drop policy if exists "Customers can create reviews after session" on public.reviews;
+create policy "Customers can create reviews after session"
   on public.reviews for insert with check (
     auth.uid() = customer_id
     and exists (
-      select 1 from public.bookings
-      where id = reviews.booking_id
-      and customer_id = auth.uid()
-      and status = 'completed'
+      select 1
+      from public.bookings b
+      join public.time_slots ts on ts.id = b.slot_id
+      where b.id = reviews.booking_id
+        and b.customer_id = auth.uid()
+        and b.status in ('confirmed', 'completed')
+        and ts.ends_at <= now()
     )
   );
 
@@ -379,7 +392,7 @@ begin
         'Booking Cancelled',
         'Захиалга цуцлагдлаа',
         'Your ' || coalesce(v_service_title, 'session') || ' was cancelled by the coach.',
-        'Тренерийн тийн захиалга цуцлагдлаа.',
+        'Дасгалжуулагчийн захиалга цуцлагдлаа.',
         jsonb_build_object('booking_id', new.id)
       );
     end if;
@@ -497,7 +510,7 @@ begin
     raise exception 'Not enough available places for this time slot' using errcode = 'P0001';
   end if;
 
-  v_status := case when v_service_type = 'group_lesson' then 'confirmed' else 'pending' end;
+  v_status := case when coalesce(p_amount, 0) <= 0 then 'confirmed' else 'pending' end;
 
   insert into public.bookings (
     slot_id,

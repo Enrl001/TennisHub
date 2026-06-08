@@ -135,15 +135,25 @@ class _AddSlotScreenState extends ConsumerState<AddSlotScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.slotCreated)));
       context.pop();
-    } catch (e) {
+    } on DuplicateCoachSlotException {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            isMn
-                ? 'Цаг нэмэж чадсангүй. Дахин оролдоно уу.'
-                : 'Could not add slot. Please try again.',
-          ),
+          content: Text(l10n.duplicateSlot),
+          backgroundColor: AppColors.statusCancelled,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      final message = e.toString().contains('time_slots_coach_service_start_unique') ||
+              e.toString().contains('duplicate key')
+          ? l10n.duplicateSlot
+          : (isMn
+              ? 'Цаг нэмэж чадсангүй. Дахин оролдоно уу.'
+              : 'Could not add slot. Please try again.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
           backgroundColor: AppColors.statusCancelled,
         ),
       );

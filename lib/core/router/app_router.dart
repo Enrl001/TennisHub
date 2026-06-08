@@ -14,6 +14,7 @@ import '../../features/booking/screens/booking_requested_screen.dart';
 import '../../features/booking/screens/booking_screen.dart';
 import '../../features/booking/screens/booking_success_screen.dart';
 import '../../features/booking/screens/payment_screen.dart';
+import '../../features/booking/screens/session_detail_screen.dart';
 import '../../features/calendar/screens/calendar_screen.dart';
 import '../../features/coach/screens/add_service_screen.dart';
 import '../../features/coach/screens/add_slot_screen.dart';
@@ -166,6 +167,28 @@ GoRouter appRouter(Ref ref) {
           }
           return BookingSuccessScreen(
             bookingId: Uri.decodeComponent(bookingId),
+          );
+        },
+      ),
+      GoRoute(
+        name: 'session',
+        path: '/session',
+        builder: (_, state) {
+          final bookingId = state.uri.queryParameters['bookingId'];
+          final slotId = state.uri.queryParameters['slotId'];
+          if ((bookingId == null || bookingId.isEmpty) &&
+              (slotId == null || slotId.isEmpty)) {
+            return const Scaffold(
+              body: Center(child: Text('Missing session')),
+            );
+          }
+          return SessionDetailScreen(
+            bookingId: bookingId != null && bookingId.isNotEmpty
+                ? Uri.decodeComponent(bookingId)
+                : null,
+            slotId: slotId != null && slotId.isNotEmpty
+                ? Uri.decodeComponent(slotId)
+                : null,
           );
         },
       ),

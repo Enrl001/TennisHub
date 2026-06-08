@@ -88,7 +88,7 @@ begin
         'Booking Cancelled',
         'Захиалга цуцлагдлаа',
         'Your ' || coalesce(v_service_title, 'session') || ' was cancelled by the coach.',
-        'Тренерийн тийн захиалга цуцлагдлаа.',
+        'Дасгалжуулагчийн захиалга цуцлагдлаа.',
         jsonb_build_object('booking_id', new.id)
       );
     end if;

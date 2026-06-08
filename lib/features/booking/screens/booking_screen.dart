@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
+import '../../../core/utils/locale_format.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
@@ -347,8 +347,7 @@ class _BookingDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final dateFormat = DateFormat('EEE, MMM d, yyyy');
-    final timeFormat = DateFormat('h:mm a');
+    final fmt = LocaleFormat(Localizations.localeOf(context).languageCode);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -371,13 +370,12 @@ class _BookingDetails extends StatelessWidget {
             const SizedBox(height: 12),
             _DetailRow(
               label: l10n.date,
-              value: dateFormat.format(slot.startsAt),
+              value: fmt.displayDate(slot.startsAt),
             ),
             const SizedBox(height: 6),
             _DetailRow(
               label: l10n.time,
-              value:
-                  '${timeFormat.format(slot.startsAt)} - ${timeFormat.format(slot.endsAt)}',
+              value: fmt.timeRange(slot.startsAt, slot.endsAt),
             ),
             const SizedBox(height: 6),
             _DetailRow(

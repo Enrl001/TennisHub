@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/locale_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/extensions/local_ext.dart';
 import '../../../shared/models/models.dart';
-import '../../booking/providers/booking_provider.dart';
+import '../booking_flow.dart';
+import '../providers/booking_provider.dart';
 import '../../calendar/providers/calendar_service.dart';
 
 class BookingSuccessScreen extends ConsumerWidget {
@@ -64,7 +65,7 @@ class _SuccessBody extends StatelessWidget {
     final amountPaid = b?.amountPaid;
     final title = service != null
         ? service.localTitle(locale)
-        : (locale == 'mn' ? 'Сесс' : 'Session');
+        : l10n.session;
 
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -148,7 +149,7 @@ class _SuccessBody extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        DateFormat('EEE, MMM d · h:mm a').format(slot.startsAt),
+                        LocaleFormat(locale).displayDateWithTime(slot.startsAt),
                         style: const TextStyle(fontSize: 13),
                       ),
                     ],
@@ -194,7 +195,18 @@ class _SuccessBody extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          if (b != null)
+          if (b != null) ...[
+            OutlinedButton.icon(
+              onPressed: () => openSession(context, bookingId),
+              icon: const Icon(Icons.info_outline),
+              label: Text(l10n.sessionDetails),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: HubStyle.hubOlive,
+                side: const BorderSide(color: HubStyle.hubOlive),
+                minimumSize: const Size(double.infinity, 44),
+              ),
+            ),
+            const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: () => CalendarService.showCalendarPicker(context, b),
               icon: const Icon(Icons.event_outlined),
@@ -205,6 +217,7 @@ class _SuccessBody extends StatelessWidget {
                 minimumSize: const Size(double.infinity, 44),
               ),
             ),
+          ],
           const SizedBox(height: 12),
           ElevatedButton(
             onPressed: () => context.go('/home'),

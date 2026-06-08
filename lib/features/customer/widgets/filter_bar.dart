@@ -26,7 +26,8 @@ class FilterBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: filters.entries.map((e) {
           final selected = activeFilter == e.key;
-          final color = e.key == null ? AppColors.primary : AppColors.serviceColor(e.key!);
+          final color =
+              e.key == null ? HubStyle.hubOlive : AppColors.serviceColor(e.key!);
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: FilterChip(
@@ -39,7 +40,7 @@ class FilterBar extends StatelessWidget {
                 color: selected ? color : Colors.grey,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
               ),
-              side: BorderSide(color: selected ? color : AppColors.cardBorder),
+              side: BorderSide(color: selected ? color : HubStyle.cardBorder),
             ),
           );
         }).toList(),

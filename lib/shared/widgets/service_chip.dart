@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/extensions.dart';
+import '../../l10n/app_localizations.dart';
 
 class ServiceChip extends StatelessWidget {
   const ServiceChip({super.key, required this.type, this.small = false});
@@ -20,6 +21,7 @@ class ServiceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final color = AppColors.serviceColor(type);
     final fontSize = small ? 11.0 : 12.0;
     final padding = small
@@ -39,7 +41,7 @@ class ServiceChip extends StatelessWidget {
           Icon(_icon(), size: small ? 12 : 14, color: color),
           const SizedBox(width: 4),
           Text(
-            type.serviceTypeLabel(),
+            type.serviceTypeLabel(l10n),
             style: TextStyle(
               color: color,
               fontSize: fontSize,
